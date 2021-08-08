@@ -1,0 +1,8 @@
+node_modules
+
+#hardhat files
+cache
+artifacts
+frontend/src/hardhat
+
+.env
