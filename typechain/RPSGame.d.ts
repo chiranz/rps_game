@@ -24,29 +24,47 @@ import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 interface RPSGameInterface extends ethers.utils.Interface {
   functions: {
     "betAmount()": FunctionFragment;
+    "depositBet()": FunctionFragment;
     "gameState()": FunctionFragment;
+    "pickWinner()": FunctionFragment;
     "playerA()": FunctionFragment;
     "playerB()": FunctionFragment;
-    "submitBet()": FunctionFragment;
     "submitMove(uint8)": FunctionFragment;
+    "withdrawFund()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "betAmount", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "depositBet",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "gameState", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "pickWinner",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "playerA", values?: undefined): string;
   encodeFunctionData(functionFragment: "playerB", values?: undefined): string;
-  encodeFunctionData(functionFragment: "submitBet", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "submitMove",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawFund",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(functionFragment: "betAmount", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "depositBet", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "gameState", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "pickWinner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerB", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "submitBet", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "submitMove", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawFund",
+    data: BytesLike
+  ): Result;
 
   events: {
     "ResetGame()": EventFragment;
@@ -79,6 +97,10 @@ export class RPSGame extends Contract {
       0: BigNumber;
     }>;
 
+    depositBet(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
+    "depositBet()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
     gameState(overrides?: CallOverrides): Promise<{
       0: number;
     }>;
@@ -86,6 +108,10 @@ export class RPSGame extends Contract {
     "gameState()"(overrides?: CallOverrides): Promise<{
       0: number;
     }>;
+
+    pickWinner(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "pickWinner()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     playerA(overrides?: CallOverrides): Promise<{
       move: number;
@@ -131,10 +157,6 @@ export class RPSGame extends Contract {
       3: boolean;
     }>;
 
-    submitBet(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-    "submitBet()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
     submitMove(
       _move: BigNumberish,
       overrides?: Overrides
@@ -144,15 +166,27 @@ export class RPSGame extends Contract {
       _move: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
+
+    withdrawFund(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "withdrawFund()"(overrides?: Overrides): Promise<ContractTransaction>;
   };
 
   betAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
   "betAmount()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+  depositBet(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
+  "depositBet()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
   gameState(overrides?: CallOverrides): Promise<number>;
 
   "gameState()"(overrides?: CallOverrides): Promise<number>;
+
+  pickWinner(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "pickWinner()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   playerA(overrides?: CallOverrides): Promise<{
     move: number;
@@ -198,10 +232,6 @@ export class RPSGame extends Contract {
     3: boolean;
   }>;
 
-  submitBet(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-  "submitBet()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
   submitMove(
     _move: BigNumberish,
     overrides?: Overrides
@@ -212,14 +242,26 @@ export class RPSGame extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  withdrawFund(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "withdrawFund()"(overrides?: Overrides): Promise<ContractTransaction>;
+
   callStatic: {
     betAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
     "betAmount()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    depositBet(overrides?: CallOverrides): Promise<void>;
+
+    "depositBet()"(overrides?: CallOverrides): Promise<void>;
+
     gameState(overrides?: CallOverrides): Promise<number>;
 
     "gameState()"(overrides?: CallOverrides): Promise<number>;
+
+    pickWinner(overrides?: CallOverrides): Promise<void>;
+
+    "pickWinner()"(overrides?: CallOverrides): Promise<void>;
 
     playerA(overrides?: CallOverrides): Promise<{
       move: number;
@@ -265,16 +307,16 @@ export class RPSGame extends Contract {
       3: boolean;
     }>;
 
-    submitBet(overrides?: CallOverrides): Promise<void>;
-
-    "submitBet()"(overrides?: CallOverrides): Promise<void>;
-
     submitMove(_move: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     "submitMove(uint8)"(
       _move: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    withdrawFund(overrides?: CallOverrides): Promise<void>;
+
+    "withdrawFund()"(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -288,9 +330,17 @@ export class RPSGame extends Contract {
 
     "betAmount()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    depositBet(overrides?: PayableOverrides): Promise<BigNumber>;
+
+    "depositBet()"(overrides?: PayableOverrides): Promise<BigNumber>;
+
     gameState(overrides?: CallOverrides): Promise<BigNumber>;
 
     "gameState()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pickWinner(overrides?: Overrides): Promise<BigNumber>;
+
+    "pickWinner()"(overrides?: Overrides): Promise<BigNumber>;
 
     playerA(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -300,16 +350,16 @@ export class RPSGame extends Contract {
 
     "playerB()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    submitBet(overrides?: PayableOverrides): Promise<BigNumber>;
-
-    "submitBet()"(overrides?: PayableOverrides): Promise<BigNumber>;
-
     submitMove(_move: BigNumberish, overrides?: Overrides): Promise<BigNumber>;
 
     "submitMove(uint8)"(
       _move: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
+
+    withdrawFund(overrides?: Overrides): Promise<BigNumber>;
+
+    "withdrawFund()"(overrides?: Overrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -317,9 +367,17 @@ export class RPSGame extends Contract {
 
     "betAmount()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    depositBet(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
+
+    "depositBet()"(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
+
     gameState(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "gameState()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pickWinner(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "pickWinner()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     playerA(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -328,10 +386,6 @@ export class RPSGame extends Contract {
     playerB(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "playerB()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    submitBet(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
-
-    "submitBet()"(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
 
     submitMove(
       _move: BigNumberish,
@@ -342,5 +396,9 @@ export class RPSGame extends Contract {
       _move: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
+
+    withdrawFund(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "withdrawFund()"(overrides?: Overrides): Promise<PopulatedTransaction>;
   };
 }

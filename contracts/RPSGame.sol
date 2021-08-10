@@ -1,8 +1,22 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "hardhat/console.sol";
 
 contract RPSGame {
+    enum GameState {
+        Open,
+        Initialized,
+        Progress,
+        Complete
+    }
+
+    enum Move {
+        None,
+        Rock,
+        Paper,
+        Scissors
+    }
     Player public playerA;
     Player public playerB;
     uint256 public betAmount;
@@ -20,22 +34,9 @@ contract RPSGame {
         playerA.addr = msg.sender;
     }
 
-    enum GameState {
-        Open,
-        Initialized,
-        Progress,
-        Complete
-    }
-
-    enum Move {
-        None,
-        Rock,
-        Paper,
-        Scissors
-    }
-
     event ResetGame();
     event Winner(address indexed _winner);
+    event Draw();
 
     modifier isPlayer() {
         require(
@@ -45,7 +46,7 @@ contract RPSGame {
         _;
     }
 
-    function submitBet() external payable {
+    function depositBet() external payable {
         require(
             gameState != GameState.Progress,
             "RPSGame: Game under progress"
@@ -78,29 +79,58 @@ contract RPSGame {
             gameState == GameState.Progress,
             "RPSGame: game not under progress"
         );
-
         Player storage player = playerA.addr == msg.sender ? playerA : playerB;
+
         require(
             !player.submitted,
             "RPSGame: you have already submitted the move"
         );
-        player.move = _move;
+        player.move = Move(_move);
         player.submitted = true;
         if (playerA.submitted && playerB.submitted) {
             gameState = GameState.Complete;
-            address _winner = getWinner();
-            if (_winner != address(0)) {
-                emit Winner(_winner);
-
-                payWinner(_winner);
-            }
-            resetGame();
         }
     }
 
-    function payWinner(address _winner) internal {
+    function pickWinner() external isPlayer {
+        require(
+            playerA.submitted && playerB.submitted,
+            "RPSGame: Players have not submitted their move"
+        );
+        gameState = GameState.Complete;
+        address _winner = getWinner();
+        if (_winner != address(0)) {
+            emit Winner(_winner);
+            incentivize(_winner);
+        } else {
+            emit Draw();
+        }
+
+        resetGame();
+    }
+
+    function incentivize(address _winner) internal {
         // Update contract balances of winners and loosers
-        payable(_winner).transfer(betAmount * 2);
+        if (_winner == playerA.addr) {
+            playerA.balance += betAmount;
+            playerB.balance -= betAmount;
+        } else {
+            playerB.balance += betAmount;
+            playerA.balance -= betAmount;
+        }
+    }
+
+    function withdrawFund() external isPlayer {
+        Player storage player = msg.sender == playerA.addr ? playerA : playerB;
+        require(
+            player.balance > 0,
+            "RPSGame: You don't have anything to withdraw!"
+        );
+        require(
+            !(gameState == GameState.Progress),
+            "RPSGame: You cannot withdraw fund while game is under progress"
+        );
+        payable(player.addr).transfer(player.balance);
     }
 
     function getWinner() internal view returns (address) {
@@ -119,7 +149,6 @@ contract RPSGame {
         playerA.move = Move.None;
         playerA.submitted = false;
         playerB.move = Move.None;
-
         playerB.submitted = false;
         emit ResetGame();
     }
