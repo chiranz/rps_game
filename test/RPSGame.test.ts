@@ -6,8 +6,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { RPSGame, RPSGame__factory } from "../typechain/index";
 
 enum GameState {
-  Open,
   Initialized,
+  Open,
   Progress,
   Complete,
 }
@@ -47,16 +47,16 @@ describe("RPS Game", function () {
     assert.equal(player.balance.toNumber(), 0);
   });
 
-  it("Should allow deployer to deposit bet and update gameState to initialized", async function () {
+  it("Should allow deployer to deposit bet and update gameState to open", async function () {
     await rpsGameContract.depositBet({
       value: ethers.utils.parseEther(BET_AMOUNT),
     });
     const player = await rpsGameContract.playerA();
     assert.equal(ethers.utils.formatEther(player.balance), BET_AMOUNT);
 
-    // When player A deposits bet Gamestate should update to initialized
+    // When player A deposits bet Gamestate should update to open
     const gameState = await rpsGameContract.gameState();
-    assert.equal(gameState, GameState.Initialized);
+    assert.equal(gameState, GameState.Open);
   });
   it("Should allow player B to deposit bet and update gamestate to progress", async function () {
     await rpsGameContract.connect(signers[0]).depositBet({
@@ -137,5 +137,15 @@ describe("RPS Game", function () {
 
     assert.equal(ethers.utils.formatEther(playerB.balance), "0.2");
     assert.equal(ethers.utils.formatEther(playerA.balance), "0.0");
+  });
+  it("Should reset the game.", async function () {
+    const gameState = await rpsGameContract.gameState();
+    const playerA = await rpsGameContract.playerA();
+    const playerB = await rpsGameContract.playerB();
+    assert.equal(playerA.move, Move.None);
+    assert.equal(playerB.move, Move.None);
+    assert.equal(playerA.submitted, false);
+    assert.equal(playerB.submitted, false);
+    assert.equal(gameState, GameState.Initialized);
   });
 });

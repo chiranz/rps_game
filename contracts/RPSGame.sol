@@ -1,12 +1,12 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
 contract RPSGame {
     enum GameState {
-        Open,
         Initialized,
+        Open,
         Progress,
         Complete
     }
@@ -68,7 +68,7 @@ contract RPSGame {
         );
         // If yes change gamestate [Initialized or Progress]
         if (isPlayerA) {
-            gameState = GameState.Initialized;
+            gameState = GameState.Open;
         } else {
             gameState = GameState.Progress;
         }
@@ -150,6 +150,7 @@ contract RPSGame {
         playerA.submitted = false;
         playerB.move = Move.None;
         playerB.submitted = false;
+        gameState = GameState.Initialized;
         emit ResetGame();
     }
 }

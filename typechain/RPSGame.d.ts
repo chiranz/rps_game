@@ -67,10 +67,12 @@ interface RPSGameInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
+    "Draw()": EventFragment;
     "ResetGame()": EventFragment;
     "Winner(address)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "Draw"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ResetGame"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Winner"): EventFragment;
 }
@@ -320,6 +322,8 @@ export class RPSGame extends Contract {
   };
 
   filters: {
+    Draw(): EventFilter;
+
     ResetGame(): EventFilter;
 
     Winner(_winner: string | null): EventFilter;

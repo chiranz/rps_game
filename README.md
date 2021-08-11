@@ -13,9 +13,16 @@
 
 
 ## Version 2
-### V2 Features
-  - Add function to challange player for rematch.
-  - Ability to use ERC20 Token for betting.
-  - Use salt to submit move and reveal it later with signature.
+### Todos
+  - Multiple players should be able to create a game.
+  - Protocol should be upgradable. 
+  - Multisig wallet to upgrade protocol.
+  - Should be able to challange a player.
+  - Submit signed move with salt and reveal later.
+  - Add time limit to submit move.(Say 5 mins) and to reveal move another 5 minutes. 
+  - Reset game after five minutes if one of the player doesn't submit the move.
+  - Incentivize cooperative player with non cooperative player's fund after 5 minutes of move submit.
+  - Punish non cooperative players by giving fund to other player.
+
 
 ## Contract Address
