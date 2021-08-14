@@ -1,5 +1,6 @@
 import React from "react";
 import Footer from "./components/Footer";
+import Leaderboard from "./components/Leaderboard";
 import Navbar from "./components/Navbar";
 import { joinClasses } from "./helpers";
 
@@ -12,11 +13,15 @@ function App() {
         "min-h-screen",
         "max-w-4xl",
         "mx-auto",
-        "text-center"
+        "text-center",
+        "text-gray-600",
+        "font-mono"
       )}
     >
       <Navbar />
-      <div>Body here</div>
+      <div>
+        <Leaderboard />
+      </div>
       <Footer />
     </div>
   );

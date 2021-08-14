@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
-import { joinClasses, networkNameFromId } from "../helpers";
+import { joinClasses } from "../helpers";
+import Button from "./Button";
 
 export default function Navbar(): ReactElement {
   return (
@@ -43,7 +44,7 @@ export default function Navbar(): ReactElement {
       </div>
       <ul id="nav-links" className="inline-flex">
         <li>
-          <button>Connect</button>
+          <Button color="success">Connect</Button>
         </li>
       </ul>
     </div>
