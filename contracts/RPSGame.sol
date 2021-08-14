@@ -5,10 +5,11 @@ import "hardhat/console.sol";
 
 contract RPSGame {
     enum GameState {
-        Initialized,
         Open,
-        Progress,
-        Complete
+        BetDeposited,
+        MovesSubmitted,
+        MoveRevealed,
+        Completed
     }
 
     enum Move {
@@ -24,19 +25,29 @@ contract RPSGame {
 
     struct Player {
         Move move;
+        bytes32 hashedMove;
         uint256 balance;
         address addr;
         bool submitted;
+        bool revealed;
     }
 
-    constructor(uint256 _betAmount) payable {
+    constructor(uint256 _betAmount, address _opponent) payable {
+        require(msg.sender != _opponent, "You cannot play against yourself");
         betAmount = _betAmount;
         playerA.addr = msg.sender;
+        playerB.addr = _opponent;
     }
 
     event ResetGame();
     event Winner(address indexed _winner);
     event Draw();
+    event GameComplete();
+    event Incentivized(
+        address indexed _winner,
+        uint256 betAmount,
+        uint256 balance
+    );
 
     modifier isPlayer() {
         require(
@@ -46,37 +57,24 @@ contract RPSGame {
         _;
     }
 
-    function depositBet() external payable {
+    function depositBet() external payable isPlayer {
         require(
-            gameState != GameState.Progress,
-            "RPSGame: Game under progress"
-        );
-        // Check if msg.sender is playerA?
-        bool isPlayerA = msg.sender == playerA.addr;
-        // If not initialize PlayerB
-        if (!isPlayerA) {
-            playerB.addr = msg.sender;
-        }
-        // adding balance such player may call function with less than bet amount
-        // msg.value get's stuck in the contract
-        isPlayerA ? playerA.balance += msg.value : playerB.balance += msg.value;
-        // Check if value sent is more than bet amount
-        uint256 balance = isPlayerA ? playerA.balance : playerB.balance;
-        require(
-            balance >= betAmount,
+            msg.value >= betAmount,
             "RPSGame: Balance not enough, Send more fund"
         );
-        // If yes change gamestate [Initialized or Progress]
-        if (isPlayerA) {
-            gameState = GameState.Open;
-        } else {
-            gameState = GameState.Progress;
+
+        msg.sender == playerA.addr
+            ? playerA.balance += msg.value
+            : playerB.balance += msg.value;
+
+        if (playerA.balance >= betAmount && playerB.balance >= betAmount) {
+            gameState = GameState.BetDeposited;
         }
     }
 
-    function submitMove(Move _move) external isPlayer {
+    function submitMove(bytes32 _hashedMove) external isPlayer {
         require(
-            gameState == GameState.Progress,
+            gameState == GameState.BetDeposited,
             "RPSGame: game not under progress"
         );
         Player storage player = playerA.addr == msg.sender ? playerA : playerB;
@@ -85,19 +83,43 @@ contract RPSGame {
             !player.submitted,
             "RPSGame: you have already submitted the move"
         );
-        player.move = Move(_move);
+        player.hashedMove = _hashedMove;
         player.submitted = true;
         if (playerA.submitted && playerB.submitted) {
-            gameState = GameState.Complete;
+            gameState = GameState.MovesSubmitted;
         }
     }
 
-    function pickWinner() external isPlayer {
+    function revealMove(uint8 _move, bytes32 _salt) external isPlayer {
+        require(
+            gameState == GameState.MovesSubmitted,
+            "RPSGame: both players have not submitted move yet."
+        );
+        // TODO: Should check the reveal time limit
+        Player storage currentPlayer = msg.sender == playerA.addr
+            ? playerA
+            : playerB;
+        bytes32 revealedHash = keccak256(abi.encodePacked(_move, _salt));
+        // Already revealed
+        require(!currentPlayer.revealed, "You have already revealed your move");
+        // revealed data not true
+        require(
+            revealedHash == currentPlayer.hashedMove,
+            "RPSGame: Either your salt or move is not same as your submitted hashed move"
+        );
+        console.log(_move);
+        currentPlayer.move = Move(_move);
+        currentPlayer.revealed = true;
+        if (playerA.revealed && playerB.revealed) {
+            pickWinner();
+        }
+    }
+
+    function pickWinner() private {
         require(
             playerA.submitted && playerB.submitted,
             "RPSGame: Players have not submitted their move"
         );
-        gameState = GameState.Complete;
         address _winner = getWinner();
         if (_winner != address(0)) {
             emit Winner(_winner);
@@ -105,6 +127,7 @@ contract RPSGame {
         } else {
             emit Draw();
         }
+        gameState = GameState.Completed;
 
         resetGame();
     }
@@ -114,21 +137,28 @@ contract RPSGame {
         if (_winner == playerA.addr) {
             playerA.balance += betAmount;
             playerB.balance -= betAmount;
+            emit Incentivized(playerA.addr, betAmount, playerA.balance);
         } else {
             playerB.balance += betAmount;
             playerA.balance -= betAmount;
+            emit Incentivized(playerB.addr, betAmount, playerB.balance);
         }
     }
 
-    function withdrawFund() external isPlayer {
+    modifier notUnderProgress() {
+        require(
+            gameState != GameState.MovesSubmitted &&
+                gameState != GameState.BetDeposited,
+            "RPSGame: Game under progress"
+        );
+        _;
+    }
+
+    function withdrawFund() external isPlayer notUnderProgress {
         Player storage player = msg.sender == playerA.addr ? playerA : playerB;
         require(
             player.balance > 0,
             "RPSGame: You don't have anything to withdraw!"
-        );
-        require(
-            !(gameState == GameState.Progress),
-            "RPSGame: You cannot withdraw fund while game is under progress"
         );
         payable(player.addr).transfer(player.balance);
     }
@@ -150,7 +180,7 @@ contract RPSGame {
         playerA.submitted = false;
         playerB.move = Move.None;
         playerB.submitted = false;
-        gameState = GameState.Initialized;
+        gameState = GameState.Open;
         emit ResetGame();
     }
 }

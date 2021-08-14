@@ -26,10 +26,10 @@ interface RPSGameInterface extends ethers.utils.Interface {
     "betAmount()": FunctionFragment;
     "depositBet()": FunctionFragment;
     "gameState()": FunctionFragment;
-    "pickWinner()": FunctionFragment;
     "playerA()": FunctionFragment;
     "playerB()": FunctionFragment;
-    "submitMove(uint8)": FunctionFragment;
+    "revealMove(uint8,bytes32)": FunctionFragment;
+    "submitMove(bytes32)": FunctionFragment;
     "withdrawFund()": FunctionFragment;
   };
 
@@ -39,15 +39,15 @@ interface RPSGameInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "gameState", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "pickWinner",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "playerA", values?: undefined): string;
   encodeFunctionData(functionFragment: "playerB", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "revealMove",
+    values: [BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "submitMove",
-    values: [BigNumberish]
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawFund",
@@ -57,9 +57,9 @@ interface RPSGameInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "betAmount", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "depositBet", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "gameState", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "pickWinner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerB", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "revealMove", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "submitMove", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "withdrawFund",
@@ -68,11 +68,15 @@ interface RPSGameInterface extends ethers.utils.Interface {
 
   events: {
     "Draw()": EventFragment;
+    "GameComplete()": EventFragment;
+    "Incentivized(address,uint256,uint256)": EventFragment;
     "ResetGame()": EventFragment;
     "Winner(address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Draw"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GameComplete"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Incentivized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ResetGame"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Winner"): EventFragment;
 }
@@ -111,61 +115,85 @@ export class RPSGame extends Contract {
       0: number;
     }>;
 
-    pickWinner(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "pickWinner()"(overrides?: Overrides): Promise<ContractTransaction>;
-
     playerA(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
     "playerA()"(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
     playerB(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
     "playerB()"(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
-    submitMove(
+    revealMove(
       _move: BigNumberish,
+      _salt: BytesLike,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "submitMove(uint8)"(
+    "revealMove(uint8,bytes32)"(
       _move: BigNumberish,
+      _salt: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    submitMove(
+      _hashedMove: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "submitMove(bytes32)"(
+      _hashedMove: BytesLike,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -186,61 +214,85 @@ export class RPSGame extends Contract {
 
   "gameState()"(overrides?: CallOverrides): Promise<number>;
 
-  pickWinner(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "pickWinner()"(overrides?: Overrides): Promise<ContractTransaction>;
-
   playerA(overrides?: CallOverrides): Promise<{
     move: number;
+    hashedMove: string;
     balance: BigNumber;
     addr: string;
     submitted: boolean;
+    revealed: boolean;
     0: number;
-    1: BigNumber;
-    2: string;
-    3: boolean;
+    1: string;
+    2: BigNumber;
+    3: string;
+    4: boolean;
+    5: boolean;
   }>;
 
   "playerA()"(overrides?: CallOverrides): Promise<{
     move: number;
+    hashedMove: string;
     balance: BigNumber;
     addr: string;
     submitted: boolean;
+    revealed: boolean;
     0: number;
-    1: BigNumber;
-    2: string;
-    3: boolean;
+    1: string;
+    2: BigNumber;
+    3: string;
+    4: boolean;
+    5: boolean;
   }>;
 
   playerB(overrides?: CallOverrides): Promise<{
     move: number;
+    hashedMove: string;
     balance: BigNumber;
     addr: string;
     submitted: boolean;
+    revealed: boolean;
     0: number;
-    1: BigNumber;
-    2: string;
-    3: boolean;
+    1: string;
+    2: BigNumber;
+    3: string;
+    4: boolean;
+    5: boolean;
   }>;
 
   "playerB()"(overrides?: CallOverrides): Promise<{
     move: number;
+    hashedMove: string;
     balance: BigNumber;
     addr: string;
     submitted: boolean;
+    revealed: boolean;
     0: number;
-    1: BigNumber;
-    2: string;
-    3: boolean;
+    1: string;
+    2: BigNumber;
+    3: string;
+    4: boolean;
+    5: boolean;
   }>;
 
-  submitMove(
+  revealMove(
     _move: BigNumberish,
+    _salt: BytesLike,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "submitMove(uint8)"(
+  "revealMove(uint8,bytes32)"(
     _move: BigNumberish,
+    _salt: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  submitMove(
+    _hashedMove: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "submitMove(bytes32)"(
+    _hashedMove: BytesLike,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -261,58 +313,85 @@ export class RPSGame extends Contract {
 
     "gameState()"(overrides?: CallOverrides): Promise<number>;
 
-    pickWinner(overrides?: CallOverrides): Promise<void>;
-
-    "pickWinner()"(overrides?: CallOverrides): Promise<void>;
-
     playerA(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
     "playerA()"(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
     playerB(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
     "playerB()"(overrides?: CallOverrides): Promise<{
       move: number;
+      hashedMove: string;
       balance: BigNumber;
       addr: string;
       submitted: boolean;
+      revealed: boolean;
       0: number;
-      1: BigNumber;
-      2: string;
-      3: boolean;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
     }>;
 
-    submitMove(_move: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    "submitMove(uint8)"(
+    revealMove(
       _move: BigNumberish,
+      _salt: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "revealMove(uint8,bytes32)"(
+      _move: BigNumberish,
+      _salt: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    submitMove(
+      _hashedMove: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "submitMove(bytes32)"(
+      _hashedMove: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -323,6 +402,14 @@ export class RPSGame extends Contract {
 
   filters: {
     Draw(): EventFilter;
+
+    GameComplete(): EventFilter;
+
+    Incentivized(
+      _winner: string | null,
+      betAmount: null,
+      balance: null
+    ): EventFilter;
 
     ResetGame(): EventFilter;
 
@@ -342,10 +429,6 @@ export class RPSGame extends Contract {
 
     "gameState()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pickWinner(overrides?: Overrides): Promise<BigNumber>;
-
-    "pickWinner()"(overrides?: Overrides): Promise<BigNumber>;
-
     playerA(overrides?: CallOverrides): Promise<BigNumber>;
 
     "playerA()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -354,10 +437,25 @@ export class RPSGame extends Contract {
 
     "playerB()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    submitMove(_move: BigNumberish, overrides?: Overrides): Promise<BigNumber>;
-
-    "submitMove(uint8)"(
+    revealMove(
       _move: BigNumberish,
+      _salt: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "revealMove(uint8,bytes32)"(
+      _move: BigNumberish,
+      _salt: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    submitMove(
+      _hashedMove: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "submitMove(bytes32)"(
+      _hashedMove: BytesLike,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
@@ -379,10 +477,6 @@ export class RPSGame extends Contract {
 
     "gameState()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    pickWinner(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "pickWinner()"(overrides?: Overrides): Promise<PopulatedTransaction>;
-
     playerA(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "playerA()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -391,13 +485,25 @@ export class RPSGame extends Contract {
 
     "playerB()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    submitMove(
+    revealMove(
       _move: BigNumberish,
+      _salt: BytesLike,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "submitMove(uint8)"(
+    "revealMove(uint8,bytes32)"(
       _move: BigNumberish,
+      _salt: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    submitMove(
+      _hashedMove: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "submitMove(bytes32)"(
+      _hashedMove: BytesLike,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
