@@ -1,13 +1,14 @@
 import React, { ReactElement } from "react";
-import { GlobalContext } from "../../context/GlobalContext";
+import { useMessage } from "../../context/MessageContext";
+import { useWallet } from "../../context/WalletContext";
 import { getTruncatedAddress, joinClasses } from "../../helpers";
 import { getSignerAddress } from "../../provider";
 import Button from "../Button";
 import GlobalMessage from "../GlobalMessage";
 
 export default function Navbar(): ReactElement {
-  const { setWalletAddress, walletAddress, setGlobalMessage } =
-    React.useContext(GlobalContext);
+  const { walletAddress, setWalletAddress } = useWallet();
+  const { setGlobalMessage } = useMessage();
   const handleConnect = async () => {
     const ethereum = (window as any).ethereum;
     if (ethereum) {
@@ -24,6 +25,9 @@ export default function Navbar(): ReactElement {
             message: "Wallet connected successfully!",
             type: "success",
           });
+          setTimeout(() => {
+            setGlobalMessage({});
+          }, 3000);
         }
       } catch (err: any) {
         console.log(err.message);

@@ -2,6 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@nomiclabs/hardhat-ethers': ^2.0.0
+  '@nomiclabs/hardhat-etherscan': ^2.1.4
   '@nomiclabs/hardhat-waffle': ^2.0.0
   '@openzeppelin/contracts': ^4.2.0
   '@symfoni/hardhat-react': ^0.1.14
@@ -28,6 +29,7 @@ dependencies:
 
 devDependencies:
   '@nomiclabs/hardhat-ethers': 2.0.2_ethers@5.4.3+hardhat@2.5.0
+  '@nomiclabs/hardhat-etherscan': 2.1.4_hardhat@2.5.0
   '@nomiclabs/hardhat-waffle': 2.0.1_d7985226af1ae7300baa878aad26fa78
   '@openzeppelin/contracts': 4.2.0
   '@symfoni/hardhat-react': 0.1.14_e091f31bb5557f47b0bd59d853b99922
@@ -564,6 +566,23 @@ packages:
     dependencies:
       ethers: 5.4.3
       hardhat: 2.5.0
+    dev: true
+
+  /@nomiclabs/hardhat-etherscan/2.1.4_hardhat@2.5.0:
+    resolution: {integrity: sha512-KgFNTQv9gpioiTpQ9UlTysCAFfkcBonmEn9rVPTT22A7DRENFM1VTsVeGWF3AzRhd0mrASBF+o0gvbH30pSe0Q==}
+    peerDependencies:
+      hardhat: ^2.0.4
+    dependencies:
+      '@ethersproject/abi': 5.4.0
+      '@ethersproject/address': 5.4.0
+      cbor: 5.2.0
+      debug: 4.3.2
+      fs-extra: 7.0.1
+      hardhat: 2.5.0
+      node-fetch: 2.6.1
+      semver: 6.3.0
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@nomiclabs/hardhat-waffle/2.0.1_d7985226af1ae7300baa878aad26fa78:
@@ -1711,7 +1730,6 @@ packages:
   /bignumber.js/9.0.1:
     resolution: {integrity: sha512-IdZR9mh6ahOBv/hYGiXyVuyCetmGJhtYkqLBpTStdhEGjegpPlUawydyaF3pbIOFynJTpllEs+NP+CS9jKFLjA==}
     dev: true
-    optional: true
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -1987,6 +2005,14 @@ packages:
 
   /caseless/0.12.0:
     resolution: {integrity: sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=}
+    dev: true
+
+  /cbor/5.2.0:
+    resolution: {integrity: sha512-5IMhi9e1QU76ppa5/ajP1BmMWZ2FHkhAhjeVKQ/EFCgYSEaeVaoGtL7cxJskf9oCCk+XjzaIdc3IuU/dbA/o2A==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      bignumber.js: 9.0.1
+      nofilter: 1.0.4
     dev: true
 
   /chai/4.3.4:
@@ -5375,6 +5401,11 @@ packages:
   /node-gyp-build/4.2.3:
     resolution: {integrity: sha512-MN6ZpzmfNCRM+3t57PTJHgHyw/h4OWnZ6mR8P5j/uZtqQr46RRuDE/P+g3n0YR/AiYXeWixZZzaip77gdICfRg==}
     hasBin: true
+    dev: true
+
+  /nofilter/1.0.4:
+    resolution: {integrity: sha512-N8lidFp+fCz+TD51+haYdbDGrcBWwuHX40F5+z0qkUjMJ5Tp+rdSuAkMJ9N9eoolDlEVTf6u5icM+cNKkKW2mA==}
+    engines: {node: '>=8'}
     dev: true
 
   /normalize-package-data/2.5.0:

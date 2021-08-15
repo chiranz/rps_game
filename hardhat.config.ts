@@ -1,14 +1,20 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-etherscan";
 // import "hardhat-deploy-ethers";
 // import "hardhat-deploy";
 import "hardhat-typechain";
 import "@typechain/ethers-v5";
-import { getInfuraKey, getPrivateKey } from "./helpers/env_helpers";
+import {
+  getEtherScanKey,
+  getInfuraKey,
+  getPrivateKey,
+} from "./helpers/env_helpers";
 
 const INFURA_KEY = getInfuraKey();
 const PRIVATE_KEY = getPrivateKey();
+const ETHERSCAN_KEY = getEtherScanKey();
 
 const config: HardhatUserConfig = {
   networks: {
@@ -38,6 +44,12 @@ const config: HardhatUserConfig = {
       url: `https://kovan.infura.io/v3/${INFURA_KEY}`,
       accounts: [PRIVATE_KEY],
     },
+  },
+  etherscan: {
+    apiKey: ETHERSCAN_KEY,
+  },
+  paths: {
+    artifacts: "./frontend/src/artifacts",
   },
   solidity: {
     compilers: [

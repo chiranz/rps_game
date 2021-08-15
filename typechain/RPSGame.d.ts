@@ -69,6 +69,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
   events: {
     "Draw()": EventFragment;
     "GameComplete()": EventFragment;
+    "GameStateChanged(uint8)": EventFragment;
     "Incentivized(address,uint256,uint256)": EventFragment;
     "ResetGame()": EventFragment;
     "Winner(address)": EventFragment;
@@ -76,6 +77,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "Draw"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GameComplete"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GameStateChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Incentivized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ResetGame"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Winner"): EventFragment;
@@ -404,6 +406,8 @@ export class RPSGame extends Contract {
     Draw(): EventFilter;
 
     GameComplete(): EventFilter;
+
+    GameStateChanged(gameState: null): EventFilter;
 
     Incentivized(
       _winner: string | null,

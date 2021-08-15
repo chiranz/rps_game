@@ -6,7 +6,7 @@ import "hardhat/console.sol";
 contract RPSGame {
     enum GameState {
         Open,
-        BetDeposited,
+        BetsDeposited,
         MovesSubmitted,
         MoveRevealed,
         Completed
@@ -39,6 +39,7 @@ contract RPSGame {
         playerB.addr = _opponent;
     }
 
+    event GameStateChanged(GameState gameState);
     event ResetGame();
     event Winner(address indexed _winner);
     event Draw();
@@ -68,13 +69,14 @@ contract RPSGame {
             : playerB.balance += msg.value;
 
         if (playerA.balance >= betAmount && playerB.balance >= betAmount) {
-            gameState = GameState.BetDeposited;
+            gameState = GameState.BetsDeposited;
+            emit GameStateChanged(GameState.BetsDeposited);
         }
     }
 
     function submitMove(bytes32 _hashedMove) external isPlayer {
         require(
-            gameState == GameState.BetDeposited,
+            gameState == GameState.BetsDeposited,
             "RPSGame: game not under progress"
         );
         Player storage player = playerA.addr == msg.sender ? playerA : playerB;
@@ -87,6 +89,7 @@ contract RPSGame {
         player.submitted = true;
         if (playerA.submitted && playerB.submitted) {
             gameState = GameState.MovesSubmitted;
+            emit GameStateChanged(GameState.MovesSubmitted);
         }
     }
 
@@ -107,7 +110,6 @@ contract RPSGame {
             revealedHash == currentPlayer.hashedMove,
             "RPSGame: Either your salt or move is not same as your submitted hashed move"
         );
-        console.log(_move);
         currentPlayer.move = Move(_move);
         currentPlayer.revealed = true;
         if (playerA.revealed && playerB.revealed) {
@@ -128,6 +130,7 @@ contract RPSGame {
             emit Draw();
         }
         gameState = GameState.Completed;
+        emit GameStateChanged(GameState.Completed);
 
         resetGame();
     }
@@ -148,7 +151,7 @@ contract RPSGame {
     modifier notUnderProgress() {
         require(
             gameState != GameState.MovesSubmitted &&
-                gameState != GameState.BetDeposited,
+                gameState != GameState.BetsDeposited,
             "RPSGame: Game under progress"
         );
         _;
@@ -181,6 +184,7 @@ contract RPSGame {
         playerB.move = Move.None;
         playerB.submitted = false;
         gameState = GameState.Open;
+        emit GameStateChanged(GameState.Open);
         emit ResetGame();
     }
 }

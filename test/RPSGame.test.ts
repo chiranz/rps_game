@@ -7,7 +7,7 @@ import { RPSGame, RPSGame__factory } from "../typechain/index";
 
 enum GameState {
   Open,
-  BetDeposited,
+  BetsDeposited,
   MovesSubmitted,
   MoveRevealed,
   Completed,
@@ -84,7 +84,7 @@ describe("RPS Game", function () {
   });
   it("should update game state to bet deposited once both players deposit bet", async function () {
     const gameState = await rpsGameContract.gameState();
-    assert.equal(gameState, GameState.BetDeposited);
+    assert.equal(gameState, GameState.BetsDeposited);
   });
   it("should check if player A and player B are different accounts", async function () {
     const playerA = await rpsGameContract.playerA();

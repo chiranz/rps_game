@@ -1,9 +1,9 @@
 import React, { ReactElement } from "react";
-import { GlobalContext } from "../context/GlobalContext";
+import { useMessage } from "../context/MessageContext";
 import { joinClasses } from "../helpers";
 
 export default function GlobalMessage(): ReactElement {
-  const { globalMessage, setGlobalMessage } = React.useContext(GlobalContext);
+  const { globalMessage, setGlobalMessage } = useMessage();
 
   const color =
     globalMessage?.type === "error"
