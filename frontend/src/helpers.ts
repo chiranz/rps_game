@@ -13,17 +13,3 @@ export const networkNameFromId = {
 export const getTruncatedAddress = (address: string) => {
   return `${address.slice(0, 4)}...${address.slice(address.length - 2)}`;
 };
-
-interface TailwindColorClassProps {
-  color: string;
-  weight?: number;
-  type: string;
-}
-
-export const getTailwindColorClass = ({
-  color,
-  weight = 500,
-  type,
-}: TailwindColorClassProps) => {
-  return `${type}-${color}-${weight}`;
-};

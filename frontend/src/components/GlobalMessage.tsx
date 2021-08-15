@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { GlobalContext } from "../context/GlobalContext";
-import { getTailwindColorClass, joinClasses } from "../helpers";
+import { joinClasses } from "../helpers";
 
 export default function GlobalMessage(): ReactElement {
   const { globalMessage, setGlobalMessage } = React.useContext(GlobalContext);
@@ -18,13 +18,35 @@ export default function GlobalMessage(): ReactElement {
       setGlobalMessage({});
     }
   };
+
   if (globalMessage?.message) {
     return (
       <div
         className={joinClasses(
-          getTailwindColorClass({ color, weight: 100, type: "bg" }),
+          `${
+            color === "yellow"
+              ? "bg-yellow-100"
+              : color === "red"
+              ? "bg-red-100"
+              : color === "blue"
+              ? "bg-blue-100"
+              : color === "green"
+              ? "bg-green-100"
+              : "bg-gray-100"
+          }`,
+
           "border",
-          getTailwindColorClass({ color, weight: 700, type: "border" }),
+          `${
+            color === "yellow"
+              ? "border-yellow-500"
+              : color === "red"
+              ? "border-red-500"
+              : color === "blue"
+              ? "border-blue-500"
+              : color === "green"
+              ? "border-green-500"
+              : "border-gray-500"
+          }`,
           "mt-2",
           "py-4",
           "relative",
