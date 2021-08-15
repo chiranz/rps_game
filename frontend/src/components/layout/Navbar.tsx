@@ -1,9 +1,13 @@
 import React, { ReactElement } from "react";
-import { joinClasses } from "../../helpers";
+import { GlobalContext } from "../../context/GlobalContext";
+import { getTruncatedAddress, joinClasses } from "../../helpers";
+import { getSignerAddress } from "../../provider";
 import Button from "../Button";
 import GlobalMessage from "../GlobalMessage";
 
 export default function Navbar(): ReactElement {
+  const { setWalletAddress, walletAddress, setGlobalMessage } =
+    React.useContext(GlobalContext);
   const handleConnect = async () => {
     const ethereum = (window as any).ethereum;
     if (ethereum) {
@@ -13,6 +17,14 @@ export default function Navbar(): ReactElement {
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }],
         });
+        const address = await getSignerAddress();
+        if (address && setWalletAddress && setGlobalMessage) {
+          setWalletAddress(address);
+          setGlobalMessage({
+            message: "Wallet connected successfully!",
+            type: "success",
+          });
+        }
       } catch (err: any) {
         console.log(err.message);
       }
@@ -60,9 +72,15 @@ export default function Navbar(): ReactElement {
         </div>
         <ul id="nav-links" className="inline-flex">
           <li>
-            <Button color="success" onClick={handleConnect}>
-              Connect
-            </Button>
+            {walletAddress ? (
+              <button className="px-2 py-1 border rounded">
+                {getTruncatedAddress(walletAddress)}
+              </button>
+            ) : (
+              <Button color="success" onClick={handleConnect}>
+                Connect
+              </Button>
+            )}
           </li>
         </ul>
       </div>

@@ -19,10 +19,7 @@ export const GlobalContext = React.createContext<GlobalContextProps>({});
 
 export const GlobalProvider = ({ children }: ProviderProps) => {
   const [walletAddress, setWalletAddress] = React.useState<string>("");
-  const [globalMessage, setGlobalMessage] = React.useState<GlobalMessage>({
-    message: "This is warning",
-    type: "warning",
-  });
+  const [globalMessage, setGlobalMessage] = React.useState<GlobalMessage>({});
   return (
     <GlobalContext.Provider
       value={{
