@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { joinClasses } from "../helpers";
+import { joinClasses } from "../../helpers";
 
 export default function Footer(): ReactElement {
   return (

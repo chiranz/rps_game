@@ -1,13 +1,23 @@
 import React, { ReactElement } from "react";
 import { joinClasses } from "../helpers";
 
-enum GameState {
-  Open = "Open",
-  BetsDeposited = "Bets Deposited",
-  MovesSubmitted = "Moves Submitted",
-  MoveRevealed = "Moves Revealed",
-  Completed = "Completed",
+export enum GameState {
+  Open,
+  BetsDeposited,
+  MovesSubmitted,
+  MoveRevealed,
+  Completed,
 }
+const getGameStatusText = (id: number): string => {
+  const gameStateToText: { [key: number]: string } = {
+    0: "Open",
+    1: "Bets Deposited",
+    2: "Moves Submitted",
+    3: "Moves Revealed",
+    4: "Completed",
+  };
+  return gameStateToText[id];
+};
 
 export default function GameStatsCard(): ReactElement {
   return (
@@ -32,7 +42,7 @@ export default function GameStatsCard(): ReactElement {
       </h1>
       <div className="flex flex-col text-center">
         <h3>Status</h3>
-        <button>{GameState.BetsDeposited}</button>
+        <button>{getGameStatusText(3)}</button>
       </div>
     </div>
   );

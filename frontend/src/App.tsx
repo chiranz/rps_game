@@ -1,8 +1,9 @@
 import React from "react";
-import Footer from "./components/Footer";
+import Footer from "./components/layout/Footer";
 import Leaderboard from "./components/Leaderboard";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/layout/Navbar";
 import { joinClasses } from "./helpers";
+import Playground from "./components/Playground";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Navbar />
       <div>
         <Leaderboard />
+        <Playground />
       </div>
       <Footer />
     </div>

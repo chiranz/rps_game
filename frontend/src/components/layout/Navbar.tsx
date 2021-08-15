@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
-import { joinClasses } from "../helpers";
-import Button from "./Button";
+import { joinClasses } from "../../helpers";
+import Button from "../Button";
 
 export default function Navbar(): ReactElement {
   return (

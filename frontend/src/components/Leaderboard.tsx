@@ -5,7 +5,9 @@ import Player from "./Player";
 
 export default function Leaderboard(): ReactElement {
   return (
-    <div className={joinClasses("flex justify-between items-center mt-4")}>
+    <div
+      className={joinClasses("flex", "justify-between", "items-center", "mt-4")}
+    >
       <Player />
       <GameStatsCard />
       <Player />
