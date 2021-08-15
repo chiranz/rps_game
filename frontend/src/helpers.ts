@@ -9,3 +9,7 @@ export const networkNameFromId = {
   5: "Gorli",
   42: "Kovan",
 };
+
+export const getTruncatedAddress = (address: string) => {
+  return `${address.slice(0, 4)}...${address.slice(address.length - 2)}`;
+};
