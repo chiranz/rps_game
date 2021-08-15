@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { joinClasses } from "../helpers";
+import { getTailwindColorClass, joinClasses } from "../helpers";
 import Button from "./Button";
 import styles from "./OptionButton.module.css";
 
@@ -27,7 +27,7 @@ export default function OptionButton({
       className={
         `${styles.shadowout} ` +
         joinClasses(
-          `bg-${bgColor}-500`,
+          getTailwindColorClass({ color: bgColor, weight: 500, type: "bg" }),
           "rounded-full",
           "hover:opacity-80",
           "w-36",
