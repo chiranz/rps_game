@@ -7,7 +7,7 @@ import { initialState } from "./state";
 import { getContractAddress } from "../../helpers";
 // RPS Game Contract ABI
 import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
-import { fetchGameState, StateActionType } from "./actions";
+import { depositBet, fetchGameState, StateActionType } from "./actions";
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
 interface ContractState extends GameState {
@@ -54,10 +54,14 @@ export const ContractProvider = ({ children }: ProviderProps) => {
     }
     init();
   }, [walletAddress, dispatch]);
-  console.log(state);
+  async function handleDeposit() {
+    if (contract) {
+      depositBet(contract);
+    }
+  }
 
   return (
-    <ContractContext.Provider value={state}>
+    <ContractContext.Provider value={{ ...state, depositBet: handleDeposit }}>
       {children}
     </ContractContext.Provider>
   );

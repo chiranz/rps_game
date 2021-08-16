@@ -77,7 +77,7 @@ export function getFormattedPlayer(_player: PlayerFromContract) {
   const player: Player = {
     move: _player.move,
     hashedMove: _player.hashedMove,
-    balance: _player.balance.toString(),
+    balance: ethers.utils.formatEther(_player.balance),
     addr: _player.addr,
     submitted: _player.submitted,
     revealed: _player.revealed,
@@ -111,4 +111,11 @@ export async function fetchGameState(
     betAmount: betAmount_,
     gameStage: _gameStage,
   };
+}
+
+export async function depositBet(contract: RPSGame): Promise<void> {
+  const deposit = await contract.depositBet({
+    value: ethers.utils.parseEther("0.1"),
+  });
+  await deposit.wait();
 }

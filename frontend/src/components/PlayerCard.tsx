@@ -1,9 +1,7 @@
 import React, { ReactElement } from "react";
 import { Player } from "../context/ContractContext/contractContext";
 import { getTruncatedAddress, joinClasses } from "../helpers";
-import Button from "./Button";
 
-// TODO: Action text should be deposit bet or Add more fund
 interface PlayerWithTag extends Player {
   tag: "player" | "opponent" | "audience";
   betAmount: string | null;
@@ -40,7 +38,12 @@ export default function PlayerCard({
       </div>
       <div id="content" className="mt-4">
         <h3>
-          Deposited: <span>{parseInt(betAmount || "") > 0 ? "✅" : "❌"} </span>{" "}
+          Deposited:{" "}
+          <span>
+            {parseFloat(balance || "0") >= parseFloat(betAmount || "0")
+              ? "✅"
+              : "❌"}{" "}
+          </span>{" "}
         </h3>
         <h3 className="mt-2">
           Move Submitted: <span>{submitted ? "✅" : "❌"} </span>{" "}
@@ -48,9 +51,6 @@ export default function PlayerCard({
         <h3 className="mt-2">
           Move Revealed: <span>{submitted ? "✅" : "❌"} </span>
         </h3>
-      </div>
-      <div id="actions" className="mt-6">
-        <Button className="border-green-300">Deposit Bet</Button>
       </div>
     </div>
   );
