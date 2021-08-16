@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { joinClasses } from "../helpers";
 
-export enum GameState {
+export enum GameStage {
   Open,
   BetsDeposited,
   MovesSubmitted,
@@ -19,7 +19,13 @@ const getGameStatusText = (id: number): string => {
   return gameStateToText[id];
 };
 
-export default function GameStatsCard(): ReactElement {
+export default function GameStatsCard({
+  gameStage,
+  betAmount,
+}: {
+  gameStage: any;
+  betAmount: string | null;
+}): ReactElement {
   return (
     <div
       className={joinClasses(
@@ -41,8 +47,9 @@ export default function GameStatsCard(): ReactElement {
         <span className="block">Scissors</span>
       </h1>
       <div className="flex flex-col text-center">
-        <h3>Status</h3>
-        <button>{getGameStatusText(3)}</button>
+        <div>Bet: {betAmount} ETH</div>
+        <h3>Game Stage</h3>
+        <button>{getGameStatusText(gameStage)}</button>
       </div>
     </div>
   );

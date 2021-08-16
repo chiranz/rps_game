@@ -5,23 +5,23 @@ export enum GameStage {
   MoveRevealed,
   Completed,
 }
-enum Move {
+export enum Move {
   None,
   Rock,
   Paper,
   Scissors,
 }
-interface Player {
-  move: Move;
-  hashedMove: string;
-  balance: string;
-  addr: string;
-  submitted: boolean;
-  revealed: boolean;
+export interface Player {
+  move?: Move;
+  hashedMove?: string;
+  balance?: string;
+  addr?: string;
+  submitted?: boolean;
+  revealed?: boolean;
 }
-interface GameState {
+export interface GameState {
   currentPlayer: Player | null;
   opponent: Player | null;
-  gameState: GameStage | null;
+  gameStage: GameStage | null;
   betAmount: string | null;
 }

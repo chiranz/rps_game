@@ -7,7 +7,7 @@ import { initialState } from "./state";
 import { getContractAddress } from "../../helpers";
 // RPS Game Contract ABI
 import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
-import { fetchPlayers } from "./actions";
+import { fetchGameState, StateActionType } from "./actions";
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
 interface ContractState extends GameState {
@@ -37,7 +37,6 @@ export const ContractProvider = ({ children }: ProviderProps) => {
   });
   React.useEffect(() => {
     async function init() {
-      // TODO: Fetch Player A player B bet amount and game state
       const _provider = await getProvider();
       setProvider(_provider);
       const signer = _provider.getSigner();
@@ -47,11 +46,15 @@ export const ContractProvider = ({ children }: ProviderProps) => {
         signer
       ) as unknown as RPSGame;
       setContract(_contract);
-      const players = await fetchPlayers(_contract);
-      console.log(players);
+      const gameState = await fetchGameState(_contract, walletAddress);
+      dispatch({
+        type: StateActionType.UpdateGameState,
+        payload: gameState,
+      });
     }
     init();
-  }, []);
+  }, [walletAddress, dispatch]);
+  console.log(state);
 
   return (
     <ContractContext.Provider value={state}>
@@ -59,3 +62,5 @@ export const ContractProvider = ({ children }: ProviderProps) => {
     </ContractContext.Provider>
   );
 };
+
+export const useContract = () => React.useContext(ContractContext);

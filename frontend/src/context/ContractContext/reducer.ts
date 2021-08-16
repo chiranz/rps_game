@@ -1,21 +1,16 @@
-import { ActionType, GameActions } from "./actions";
+import { StateActions, StateActionType } from "./actions";
 import { GameState } from "./contractContext";
 
-export function gameReducer(state: GameState, action: GameActions): GameState {
+export function gameReducer(state: GameState, action: StateActions): GameState {
   switch (action.type) {
-    case ActionType.DepositFund:
-      //   Todo: Deposit bet
-      // Set Global transaction status depositing
-      //
-      return { ...state };
-    case ActionType.SubmitMove:
-      //   Show transaction pending loader
-      //   Call submitmove with data
-      return { ...state };
-    case ActionType.RevealMove:
-      // Show transaction pending loader
-      // call reveal move with payload hash and loader
-      return { ...state };
+    case StateActionType.UpdateGameState:
+      return { ...action.payload };
+    case StateActionType.UpdatePlayer:
+      return { ...state, currentPlayer: action.payload };
+    case StateActionType.UpdateOpponent:
+      return { ...state, opponent: action.payload };
+    case StateActionType.UpdateGameStage:
+      return { ...state, gameStage: action.payload };
 
     default:
       return state;

@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
 contract RPSGame {
-    enum GameState {
+    enum GameStage {
         Open,
         BetsDeposited,
         MovesSubmitted,
@@ -21,7 +21,7 @@ contract RPSGame {
     Player public playerA;
     Player public playerB;
     uint256 public betAmount;
-    GameState public gameState;
+    GameStage public gameStage;
 
     struct Player {
         Move move;
@@ -39,7 +39,7 @@ contract RPSGame {
         playerB.addr = _opponent;
     }
 
-    event GameStateChanged(GameState gameState);
+    event GameStageChanged(GameStage gameStage);
     event ResetGame();
     event Winner(address indexed _winner);
     event Draw();
@@ -69,14 +69,14 @@ contract RPSGame {
             : playerB.balance += msg.value;
 
         if (playerA.balance >= betAmount && playerB.balance >= betAmount) {
-            gameState = GameState.BetsDeposited;
-            emit GameStateChanged(GameState.BetsDeposited);
+            gameStage = GameStage.BetsDeposited;
+            emit GameStageChanged(GameStage.BetsDeposited);
         }
     }
 
     function submitMove(bytes32 _hashedMove) external isPlayer {
         require(
-            gameState == GameState.BetsDeposited,
+            gameStage == GameStage.BetsDeposited,
             "RPSGame: game not under progress"
         );
         Player storage player = playerA.addr == msg.sender ? playerA : playerB;
@@ -88,14 +88,14 @@ contract RPSGame {
         player.hashedMove = _hashedMove;
         player.submitted = true;
         if (playerA.submitted && playerB.submitted) {
-            gameState = GameState.MovesSubmitted;
-            emit GameStateChanged(GameState.MovesSubmitted);
+            gameStage = GameStage.MovesSubmitted;
+            emit GameStageChanged(GameStage.MovesSubmitted);
         }
     }
 
     function revealMove(uint8 _move, bytes32 _salt) external isPlayer {
         require(
-            gameState == GameState.MovesSubmitted,
+            gameStage == GameStage.MovesSubmitted,
             "RPSGame: both players have not submitted move yet."
         );
         // TODO: Should check the reveal time limit
@@ -129,8 +129,8 @@ contract RPSGame {
         } else {
             emit Draw();
         }
-        gameState = GameState.Completed;
-        emit GameStateChanged(GameState.Completed);
+        gameStage = GameStage.Completed;
+        emit GameStageChanged(GameStage.Completed);
 
         resetGame();
     }
@@ -150,8 +150,8 @@ contract RPSGame {
 
     modifier notUnderProgress() {
         require(
-            gameState != GameState.MovesSubmitted &&
-                gameState != GameState.BetsDeposited,
+            gameStage != GameStage.MovesSubmitted &&
+                gameStage != GameStage.BetsDeposited,
             "RPSGame: Game under progress"
         );
         _;
@@ -183,8 +183,8 @@ contract RPSGame {
         playerA.submitted = false;
         playerB.move = Move.None;
         playerB.submitted = false;
-        gameState = GameState.Open;
-        emit GameStateChanged(GameState.Open);
+        gameStage = GameStage.Open;
+        emit GameStageChanged(GameStage.Open);
         emit ResetGame();
     }
 }

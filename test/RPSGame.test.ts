@@ -5,7 +5,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { RPSGame, RPSGame__factory } from "../typechain/index";
 
-enum GameState {
+enum GameStage {
   Open,
   BetsDeposited,
   MovesSubmitted,
@@ -69,8 +69,8 @@ describe("RPS Game", function () {
     assert.equal(ethers.utils.formatEther(player.balance), BET_AMOUNT);
 
     // When player A deposits bet Gamestate should update to open
-    const gameState = await rpsGameContract.gameState();
-    assert.equal(gameState, GameState.Open);
+    const gameStage = await rpsGameContract.gameStage();
+    assert.equal(gameStage, GameStage.Open);
   });
   it("should allow player B to deposit fund", async function () {
     await rpsGameContract.connect(signerB).depositBet({
@@ -83,8 +83,8 @@ describe("RPS Game", function () {
     // When player B deposits bet Gamestate should update to Progress
   });
   it("should update game state to bet deposited once both players deposit bet", async function () {
-    const gameState = await rpsGameContract.gameState();
-    assert.equal(gameState, GameState.BetsDeposited);
+    const gameStage = await rpsGameContract.gameStage();
+    assert.equal(gameStage, GameStage.BetsDeposited);
   });
   it("should check if player A and player B are different accounts", async function () {
     const playerA = await rpsGameContract.playerA();
@@ -138,8 +138,8 @@ describe("RPS Game", function () {
     }
   });
   it("should update the gamestate to moves submitted", async function () {
-    const gameState = await rpsGameContract.gameState();
-    assert.equal(gameState, GameState.MovesSubmitted);
+    const gameStage = await rpsGameContract.gameStage();
+    assert.equal(gameStage, GameStage.MovesSubmitted);
   });
   it("should revert if wrong move or salt is passed to revealMove", async function () {
     try {
@@ -167,13 +167,13 @@ describe("RPS Game", function () {
     assert.equal(ethers.utils.formatEther(playerA.balance), "0.2");
   });
   it("Should reset the game.", async function () {
-    const gameState = await rpsGameContract.gameState();
+    const gameStage = await rpsGameContract.gameStage();
     const playerA = await rpsGameContract.playerA();
     const playerB = await rpsGameContract.playerB();
     assert.equal(playerA.move, Move.None);
     assert.equal(playerB.move, Move.None);
     assert.equal(playerA.submitted, false);
     assert.equal(playerB.submitted, false);
-    assert.equal(gameState, GameState.Open);
+    assert.equal(gameStage, GameStage.Open);
   });
 });

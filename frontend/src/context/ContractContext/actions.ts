@@ -1,6 +1,34 @@
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { RPSGame } from "../../RPSGame";
-import { Player } from "./contractContext";
+import { GameStage, GameState, Player } from "./contractContext";
+export enum StateActionType {
+  UpdatePlayer,
+  UpdateOpponent,
+  UpdateGameStage,
+  UpdateGameState,
+}
+export interface UpdatePlayer {
+  type: StateActionType.UpdatePlayer;
+  payload: Player;
+}
+export interface UpdateGameState {
+  type: StateActionType.UpdateGameState;
+  payload: GameState;
+}
+export interface UpdateOpponent {
+  type: StateActionType.UpdateOpponent;
+  payload: Player;
+}
+export interface UpdateGameStage {
+  type: StateActionType.UpdateGameStage;
+  payload: GameStage;
+}
+
+export type StateActions =
+  | UpdatePlayer
+  | UpdateOpponent
+  | UpdateGameStage
+  | UpdateGameState;
 
 export enum ActionType {
   DepositFund,
@@ -31,7 +59,7 @@ export type GameActions =
   | RevealMove
   | WithdrawBalance;
 
-interface PlayerFromContract {
+export interface PlayerFromContract {
   move: number;
   hashedMove: string;
   balance: BigNumber;
@@ -45,7 +73,7 @@ interface PlayerFromContract {
   4: boolean;
   5: boolean;
 }
-function getFormattedPlayer(_player: PlayerFromContract) {
+export function getFormattedPlayer(_player: PlayerFromContract) {
   const player: Player = {
     move: _player.move,
     hashedMove: _player.hashedMove,
@@ -57,10 +85,30 @@ function getFormattedPlayer(_player: PlayerFromContract) {
   return player;
 }
 
-export async function fetchPlayers(contract: RPSGame): Promise<Player[]> {
+export async function fetchGameState(
+  contract: RPSGame,
+  connectedAddress: string = ""
+): Promise<GameState> {
   const _playerA = await contract.playerA();
   const _playerB = await contract.playerB();
+  const _betAmount = await contract.betAmount();
+  const _gameStage = await contract.gameStage();
+  const betAmount_ = ethers.utils.formatEther(_betAmount);
   const playerA: Player = getFormattedPlayer(_playerA);
   const playerB: Player = getFormattedPlayer(_playerB);
-  return [playerA, playerB];
+  let opponent: Player;
+  let player: Player;
+  if (playerA.addr === connectedAddress) {
+    player = playerA;
+    opponent = playerB;
+  } else {
+    player = playerB;
+    opponent = playerA;
+  }
+  return {
+    currentPlayer: player,
+    opponent,
+    betAmount: betAmount_,
+    gameStage: _gameStage,
+  };
 }
