@@ -35,7 +35,7 @@ export default function Navbar(): ReactElement {
     }
   };
   return (
-    <React.Fragment>
+    <div>
       <div
         className={joinClasses(
           "py-4",
@@ -89,6 +89,6 @@ export default function Navbar(): ReactElement {
         </ul>
       </div>
       <GlobalMessage />
-    </React.Fragment>
+    </div>
   );
 }

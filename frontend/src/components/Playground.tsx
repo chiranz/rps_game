@@ -6,6 +6,7 @@ import Button from "./Button";
 import OptionButton from "./OptionButton";
 import { useWallet } from "../context/WalletContext";
 import { ContractProvider } from "../context/ContractContext";
+import Leaderboard from "./Leaderboard";
 
 type Option = {
   image: string;
@@ -63,7 +64,7 @@ export default function Playground(): ReactElement {
 
   if (!walletAddress) {
     return (
-      <div>
+      <div className="mt-4">
         <h1 className="text-xl">Please Connect your metamask first</h1>
       </div>
     );
@@ -71,6 +72,7 @@ export default function Playground(): ReactElement {
 
   return (
     <ContractProvider>
+      <Leaderboard />
       <div className="mt-4">
         {gameStatus === "initialized" && (
           <main className="flex flex-wrap justify-center mx-auto align-center w-96">

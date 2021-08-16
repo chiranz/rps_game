@@ -1,6 +1,5 @@
 import React from "react";
 import Footer from "./components/layout/Footer";
-import Leaderboard from "./components/Leaderboard";
 import Navbar from "./components/layout/Navbar";
 import { joinClasses } from "./helpers";
 import Playground from "./components/Playground";
@@ -25,8 +24,7 @@ function App() {
         >
           <Navbar />
 
-          <div>
-            <Leaderboard />
+          <div className="h-full">
             <Playground />
           </div>
           <Footer />
