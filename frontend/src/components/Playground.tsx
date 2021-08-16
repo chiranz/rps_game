@@ -4,6 +4,8 @@ import paper from "../images/icon-paper.svg";
 import scissors from "../images/icon-scissors.svg";
 import Button from "./Button";
 import OptionButton from "./OptionButton";
+import { useWallet } from "../context/WalletContext";
+import { ContractProvider } from "../context/ContractContext";
 
 type Option = {
   image: string;
@@ -25,6 +27,7 @@ type GameStatus =
   | "submitting"
   | "selected";
 export default function Playground(): ReactElement {
+  const { walletAddress } = useWallet();
   const [userChoice, setUserChoice] = useState<Option | null>(null);
   const [gameStatus, setGameStatus] = useState<GameStatus>("initialized");
   const handleOptionChoose = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -58,58 +61,70 @@ export default function Playground(): ReactElement {
     setGameStatus("submitting");
   };
 
-  return (
-    <div className="mt-4">
-      {gameStatus === "initialized" && (
-        <main className="flex flex-wrap justify-center mx-auto align-center w-96">
-          <h1 className="text-4xl font-medium text-green-600">
-            Select Your Choice
-          </h1>
-          {options.map((option) => getOptionButton(option, handleOptionChoose))}
-        </main>
-      )}
-      {gameStatus === "selected" && userChoice && (
-        <div>
-          <h1>Your Choice: {userChoice.value}</h1>
-          {getOptionButton(userChoice)}
-          <Button color="success" onClick={handleMoveSubmit}>
-            Submit Move
-          </Button>
-          <Button
-            onClick={() => setGameStatus("initialized")}
-            className="w-max"
-          >
-            Change Move
-          </Button>
-        </div>
-      )}
-      {gameStatus === ("submitting" || "submitted") && userChoice && (
-        <div className="flex items-center justify-between w-full h-full my-20">
-          <div className="flex flex-col items-center w-full text-center">
-            <h2 className="text-3xl">Your Pick</h2>
-            {getOptionButton(userChoice)}
-          </div>
-          <div>
-            <h1 className="text-xl">
-              <Button color="warning" className="w-max">
-                {gameStatus}
-              </Button>
-              <br />
+  if (!walletAddress) {
+    return (
+      <div>
+        <h1 className="text-xl">Please Connect your metamask first</h1>
+      </div>
+    );
+  }
 
-              <Button
-                onClick={() => setGameStatus("initialized")}
-                className="w-max"
-              >
-                Restart
-              </Button>
+  return (
+    <ContractProvider>
+      <div className="mt-4">
+        {gameStatus === "initialized" && (
+          <main className="flex flex-wrap justify-center mx-auto align-center w-96">
+            <h1 className="text-4xl font-medium text-green-600">
+              Select Your Choice
             </h1>
-          </div>
-          <div className="flex flex-col items-center w-full text-center">
-            <h2 className="text-3xl">Oponent Pick</h2>
+            {options.map((option) =>
+              getOptionButton(option, handleOptionChoose)
+            )}
+          </main>
+        )}
+        {gameStatus === "selected" && userChoice && (
+          <div>
+            <h1>Your Choice: {userChoice.value}</h1>
             {getOptionButton(userChoice)}
+            <Button color="success" onClick={handleMoveSubmit}>
+              Submit Move
+            </Button>
+            <Button
+              onClick={() => setGameStatus("initialized")}
+              className="w-max"
+            >
+              Change Move
+            </Button>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+        {gameStatus === ("submitting" || "submitted") && userChoice && (
+          <div className="flex items-center justify-between w-full h-full my-20">
+            <div className="flex flex-col items-center w-full text-center">
+              <h2 className="text-3xl">Your Pick</h2>
+              {getOptionButton(userChoice)}
+            </div>
+            <div>
+              <h1 className="text-xl">
+                <Button color="warning" className="w-max">
+                  {gameStatus}
+                </Button>
+                <br />
+
+                <Button
+                  onClick={() => setGameStatus("initialized")}
+                  className="w-max"
+                >
+                  Restart
+                </Button>
+              </h1>
+            </div>
+            <div className="flex flex-col items-center w-full text-center">
+              <h2 className="text-3xl">Oponent Pick</h2>
+              {getOptionButton(userChoice)}
+            </div>
+          </div>
+        )}
+      </div>
+    </ContractProvider>
   );
 }

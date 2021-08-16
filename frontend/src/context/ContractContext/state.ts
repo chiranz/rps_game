@@ -1,6 +1,8 @@
+import { GameState } from "./contractContext";
+
 export const initialState: GameState = {
   currentPlayer: null,
   opponent: null,
-  gameState: GameStage.Open,
+  gameState: 0,
   betAmount: null,
 };

@@ -1,4 +1,4 @@
-enum GameStage {
+export enum GameStage {
   Open,
   BetsDeposited,
   MovesSubmitted,

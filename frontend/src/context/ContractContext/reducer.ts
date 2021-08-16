@@ -1,4 +1,5 @@
 import { ActionType, GameActions } from "./actions";
+import { GameState } from "./contractContext";
 
 export function gameReducer(state: GameState, action: GameActions): GameState {
   switch (action.type) {
