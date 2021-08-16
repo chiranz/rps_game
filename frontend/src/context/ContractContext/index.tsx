@@ -6,7 +6,7 @@ import { gameReducer } from "./reducer";
 import { initialState } from "./state";
 import { getContractAddress } from "../../helpers";
 // RPS Game Contract ABI
-import { abi as rpsGameAbi } from "../../artifacts/contracts/RPSGame.sol/RPSGame.json";
+import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
 import { fetchPlayers } from "./actions";
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
