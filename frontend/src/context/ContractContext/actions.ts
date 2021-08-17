@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import { RPSGame } from "../../RPSGame";
-import { GameStage, GameState, Player } from "./contractContext";
+import { GameStage, GameState, Move, Player } from "./contractContext";
 export enum StateActionType {
   UpdatePlayer,
   UpdateOpponent,
@@ -110,6 +110,7 @@ export async function fetchGameState(
     opponent,
     betAmount: betAmount_,
     gameStage: _gameStage,
+    isPlayer: [player.addr, opponent.addr].includes(connectedAddress),
   };
 }
 
@@ -118,4 +119,23 @@ export async function depositBet(contract: RPSGame): Promise<void> {
     value: ethers.utils.parseEther("0.1"),
   });
   await deposit.wait();
+}
+
+const getHashedMove = (_move: Move, _salt: string) => {
+  const hashedMove = ethers.utils.solidityKeccak256(
+    ["uint8", "bytes32"],
+    [_move, _salt]
+  );
+  return hashedMove;
+};
+
+export async function submitMove(
+  contract: RPSGame,
+  move: Move,
+  salt: string
+): Promise<void> {
+  const _bsalt = ethers.utils.id(salt);
+  const hashedMove = getHashedMove(move, _bsalt);
+  const tx = await contract.submitMove(hashedMove);
+  await tx.wait();
 }

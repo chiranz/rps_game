@@ -49,7 +49,7 @@ export default function PlayerCard({
           Move Submitted: <span>{submitted ? "✅" : "❌"} </span>{" "}
         </h3>
         <h3 className="mt-2">
-          Move Revealed: <span>{submitted ? "✅" : "❌"} </span>
+          Move Revealed: <span>{revealed ? "✅" : "❌"} </span>
         </h3>
       </div>
     </div>

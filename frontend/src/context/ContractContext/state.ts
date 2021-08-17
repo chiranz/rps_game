@@ -5,4 +5,5 @@ export const initialState: GameState = {
   opponent: null,
   gameStage: 0,
   betAmount: "",
+  isPlayer: false,
 };

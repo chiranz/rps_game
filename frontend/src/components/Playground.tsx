@@ -4,39 +4,45 @@ import paper from "../images/icon-paper.svg";
 import scissors from "../images/icon-scissors.svg";
 import Button from "./Button";
 import OptionButton from "./OptionButton";
-import { useWallet } from "../context/WalletContext";
-import { ContractProvider } from "../context/ContractContext";
-import Leaderboard from "./Leaderboard";
+import { joinClasses } from "../helpers";
+import { useContract } from "../context/ContractContext";
 
 type Option = {
   image: string;
   value: "paper" | "scissors" | "rock";
   color: "yellow" | "red" | "blue";
   alt: string;
+  key: number;
 };
 export const options: Option[] = [
-  { image: paper, value: "paper", color: "blue", alt: "paper icon" },
-  { image: scissors, value: "scissors", color: "yellow", alt: "scissors icon" },
-  { image: rock, value: "rock", color: "red", alt: "rock icon" },
+  { image: rock, key: 1, value: "rock", color: "red", alt: "rock icon" },
+  { image: paper, key: 2, value: "paper", color: "blue", alt: "paper icon" },
+  {
+    image: scissors,
+    key: 3,
+    value: "scissors",
+    color: "yellow",
+    alt: "scissors icon",
+  },
 ];
 
-type GameStatus =
-  | "complete"
-  | "initialized"
-  | "submitted"
-  | "waiting"
-  | "submitting"
-  | "selected";
 export default function Playground(): ReactElement {
-  const { walletAddress } = useWallet();
+  // If the game stage is Bets Submitted
+  // User should be able to select move
+  // User should be able to set salt
+  // User should be able to submit move
+  // ON SUBMISSION
+  // User should be show reveal move component
+  // Reveal move can only be clicked if gameStage is Moves submitted
+  // Once Winner event is emitted update the UI with you won or lost
+  const { gameStage, submitMove, currentPlayer, isPlayer } = useContract();
   const [userChoice, setUserChoice] = useState<Option | null>(null);
-  const [gameStatus, setGameStatus] = useState<GameStatus>("initialized");
+  const [salt, setSalt] = useState("");
   const handleOptionChoose = (e: React.MouseEvent<HTMLDivElement>) => {
     const _choice = e.currentTarget.getAttribute("data-choice");
     options.forEach((option) => {
       if (option.value === _choice) {
         setUserChoice(option);
-        setGameStatus("selected");
       }
     });
   };
@@ -55,78 +61,115 @@ export default function Playground(): ReactElement {
       />
     );
   };
-  console.log(gameStatus);
+  console.log(gameStage);
 
   const handleMoveSubmit = () => {
-    // TODO: send the transaction to the blockchain
-    setGameStatus("submitting");
+    if (userChoice && submitMove) {
+      submitMove(userChoice?.key, salt);
+    }
   };
 
-  if (!walletAddress) {
-    return (
-      <div className="mt-4">
-        <h1 className="text-xl">Please Connect your metamask first</h1>
-      </div>
-    );
-  }
-
   return (
-    <ContractProvider>
-      <Leaderboard />
-      <div className="mt-4">
-        {gameStatus === "initialized" && (
-          <main className="flex flex-wrap justify-center mx-auto align-center w-96">
-            <h1 className="text-4xl font-medium text-green-600">
-              Select Your Choice
-            </h1>
-            {options.map((option) =>
-              getOptionButton(option, handleOptionChoose)
-            )}
-          </main>
-        )}
-        {gameStatus === "selected" && userChoice && (
+    <div className="py-4 mt-8 border rounded">
+      {gameStage === 1 && !currentPlayer?.submitted && !userChoice && (
+        <main className="flex flex-wrap justify-center mx-auto align-center w-96">
+          <h1 className="text-4xl font-medium text-green-600">
+            Select Your Choice
+          </h1>
+          {options.map((option) => getOptionButton(option, handleOptionChoose))}
+        </main>
+      )}
+      {userChoice && (
+        <div className="flex items-center justify-around w-full">
           <div>
-            <h1>Your Choice: {userChoice.value}</h1>
+            <h1>
+              Your Choice:{" "}
+              <span className="font-bold capitalize">{userChoice.value}</span>{" "}
+            </h1>
             {getOptionButton(userChoice)}
-            <Button color="success" onClick={handleMoveSubmit}>
-              Submit Move
-            </Button>
             <Button
-              onClick={() => setGameStatus("initialized")}
-              className="w-max"
+              disabled={!isPlayer}
+              className="block"
+              onClick={() => setUserChoice(null)}
             >
               Change Move
             </Button>
           </div>
-        )}
-        {gameStatus === ("submitting" || "submitted") && userChoice && (
-          <div className="flex items-center justify-between w-full h-full my-20">
-            <div className="flex flex-col items-center w-full text-center">
-              <h2 className="text-3xl">Your Pick</h2>
-              {getOptionButton(userChoice)}
-            </div>
-            <div>
-              <h1 className="text-xl">
-                <Button color="warning" className="w-max">
-                  {gameStatus}
-                </Button>
-                <br />
-
-                <Button
-                  onClick={() => setGameStatus("initialized")}
-                  className="w-max"
-                >
-                  Restart
-                </Button>
-              </h1>
-            </div>
-            <div className="flex flex-col items-center w-full text-center">
-              <h2 className="text-3xl">Oponent Pick</h2>
-              {getOptionButton(userChoice)}
-            </div>
+          <div>
+            <input
+              className={joinClasses("block", "p-2", "border", "rounded")}
+              type="text"
+              name="salt"
+              id="salt"
+              placeholder="salt"
+              value={salt}
+              onChange={(e) => setSalt(e.target.value)}
+            />
+            <Button
+              className="block float-right mt-4"
+              color="success"
+              onClick={handleMoveSubmit}
+              disabled={!isPlayer}
+            >
+              Submit Move
+            </Button>
           </div>
-        )}
-      </div>
-    </ContractProvider>
+        </div>
+      )}
+      {currentPlayer?.submitted && (
+        <div
+          className={joinClasses(
+            "flex",
+            "items-center",
+            "justify-between",
+            "w-full",
+            "h-full",
+            "my-20"
+          )}
+        >
+          <div
+            className={joinClasses(
+              "flex",
+              "flex-col",
+              "items-center",
+              "w-full",
+              "text-center"
+            )}
+          >
+            <h2 className="text-3xl">Your Pick</h2>
+            {getOptionButton(options[currentPlayer.move || 1])}
+          </div>
+          <div
+            className={joinClasses(
+              "flex",
+              "flex-col",
+              "items-center",
+              "w-full"
+            )}
+          >
+            <h1 className="text-3xl">Game Draw!</h1>
+            <Button
+              disabled={!isPlayer}
+              color="primary"
+              className="block text-center"
+            >
+              Play Again
+            </Button>
+          </div>
+          <div
+            className={joinClasses(
+              "flex",
+              "flex-col",
+              "items-center",
+              "w-full",
+              "text-center"
+            )}
+          >
+            <h2 className="text-3xl">Oponent Pick</h2>
+            {getOptionButton(options[2])}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

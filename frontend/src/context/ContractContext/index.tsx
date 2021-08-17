@@ -7,11 +7,16 @@ import { initialState } from "./state";
 import { getContractAddress } from "../../helpers";
 // RPS Game Contract ABI
 import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
-import { depositBet, fetchGameState, StateActionType } from "./actions";
+import {
+  depositBet,
+  fetchGameState,
+  StateActionType,
+  submitMove,
+} from "./actions";
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
 interface ContractState extends GameState {
-  submitMove?: (moveHash: string) => void;
+  submitMove?: (move: Move, salt: string) => void;
   revealMove?: (move: Move, salt: string) => void;
   depositBet?: () => void;
   withdrawFund?: () => void;
@@ -56,12 +61,27 @@ export const ContractProvider = ({ children }: ProviderProps) => {
   }, [walletAddress, dispatch]);
   async function handleDeposit() {
     if (contract) {
-      depositBet(contract);
+      // Set loading
+      await depositBet(contract);
+      // Refetch Player on action and opponent on event
+    }
+  }
+  async function handleMoveSubmit(move: Move, salt: string) {
+    if (contract) {
+      // Set loading
+      await submitMove(contract, move, salt);
+      // Refetch Player on action and opponent on event
     }
   }
 
   return (
-    <ContractContext.Provider value={{ ...state, depositBet: handleDeposit }}>
+    <ContractContext.Provider
+      value={{
+        ...state,
+        depositBet: handleDeposit,
+        submitMove: handleMoveSubmit,
+      }}
+    >
       {children}
     </ContractContext.Provider>
   );

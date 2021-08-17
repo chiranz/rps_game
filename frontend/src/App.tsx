@@ -2,9 +2,9 @@ import React from "react";
 import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
 import { joinClasses } from "./helpers";
-import Playground from "./components/Playground";
 import { WalletProvider } from "./context/WalletContext";
 import { MessageProvider } from "./context/MessageContext";
+import Game from "./components/Game";
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
           <Navbar />
 
           <div className="h-full">
-            <Playground />
+            <Game />
           </div>
           <Footer />
         </div>

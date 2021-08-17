@@ -5,7 +5,9 @@ import GameStatsCard from "./GameStatsCard";
 import PlayerCard from "./PlayerCard";
 
 export default function Leaderboard(): ReactElement {
-  const { currentPlayer, betAmount, opponent, gameStage } = useContract();
+  const { currentPlayer, betAmount, opponent, gameStage, isPlayer } =
+    useContract();
+  console.log({ isPlayer });
   return (
     <div
       className={joinClasses("flex", "justify-between", "items-center", "mt-4")}

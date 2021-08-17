@@ -24,4 +24,5 @@ export interface GameState {
   opponent: Player | null;
   gameStage: GameStage | null;
   betAmount: string | null;
+  isPlayer?: boolean;
 }

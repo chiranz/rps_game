@@ -1,6 +1,5 @@
 import React, { ReactElement } from "react";
 import { useContract } from "../context/ContractContext";
-import { useWallet } from "../context/WalletContext";
 import { joinClasses } from "../helpers";
 import Button from "./Button";
 
@@ -11,7 +10,7 @@ export enum GameStage {
   MoveRevealed,
   Completed,
 }
-const getGameStatusText = (id: number): string => {
+export const getGameStatusText = (id: number): string => {
   const gameStateToText: { [key: number]: string } = {
     0: "Open",
     1: "Bets Deposited",
@@ -29,10 +28,7 @@ export default function GameStatsCard({
   gameStage: any;
   betAmount: string | null;
 }): ReactElement {
-  const { walletAddress } = useWallet();
-  const { opponent, currentPlayer, depositBet } = useContract();
-  const isPlayer =
-    walletAddress === opponent?.addr || walletAddress === currentPlayer?.addr;
+  const { depositBet, isPlayer } = useContract();
   return (
     <div
       className={joinClasses(
@@ -61,16 +57,18 @@ export default function GameStatsCard({
           <button>{getGameStatusText(gameStage)}</button>
         </div>
       </div>
-      <div id="actions" className="mt-6">
-        {isPlayer ? (
-          <Button className="border-green-300" onClick={depositBet}>
-            Deposit Bet
-          </Button>
-        ) : (
-          <Button disabled color="warning">
-            You are an audience
-          </Button>
-        )}
+      <div className="mt-6">
+        <h2 className="text-xl font-bold text-center">
+          {isPlayer ? "Player" : "Audience"}
+        </h2>
+
+        <Button
+          disabled={!isPlayer}
+          className="border-green-300"
+          onClick={depositBet}
+        >
+          Deposit bet
+        </Button>
       </div>
     </div>
   );
