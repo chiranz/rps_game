@@ -40,13 +40,11 @@ contract RPSGame {
     event GameStageChanged(GameStage gameStage);
     event ResetGame();
     event Winner(address indexed _winner);
-    event Draw();
+    event Deposit(address indexed depositor);
     event GameComplete();
-    event Incentivized(
-        address indexed _winner,
-        uint256 betAmount,
-        uint256 balance
-    );
+    event Incentivize(address indexed, uint256 amount);
+    event SubmitMove(address indexed player);
+    event RevealMove(address indexed player);
 
     modifier isPlayer() {
         require(
@@ -54,6 +52,14 @@ contract RPSGame {
             "RPSGame: Not a valid player"
         );
         _;
+    }
+
+    function getPlayer(address _player) external view returns (Player memory) {
+        if (playerA.addr == _player) {
+            return playerA;
+        } else {
+            return playerB;
+        }
     }
 
     function depositBet() external payable isPlayer {
@@ -65,6 +71,7 @@ contract RPSGame {
         msg.sender == playerA.addr
             ? playerA.balance += msg.value
             : playerB.balance += msg.value;
+        emit Deposit(msg.sender);
 
         if (playerA.balance >= betAmount && playerB.balance >= betAmount) {
             gameStage = GameStage.BetsDeposited;
@@ -85,6 +92,7 @@ contract RPSGame {
         );
         player.hashedMove = _hashedMove;
         player.submitted = true;
+        emit SubmitMove(player.addr);
         if (playerA.submitted && playerB.submitted) {
             gameStage = GameStage.MovesSubmitted;
             emit GameStageChanged(GameStage.MovesSubmitted);
@@ -110,6 +118,7 @@ contract RPSGame {
         );
         currentPlayer.move = Move(_move);
         currentPlayer.revealed = true;
+        emit RevealMove(currentPlayer.addr);
         if (playerA.revealed && playerB.revealed) {
             pickWinner();
         }
@@ -124,11 +133,7 @@ contract RPSGame {
         if (_winner != address(0)) {
             emit Winner(_winner);
             incentivize(_winner);
-        } else {
-            emit Draw();
         }
-        gameStage = GameStage.Completed;
-        emit GameStageChanged(GameStage.Completed);
 
         resetGame();
     }
@@ -138,11 +143,11 @@ contract RPSGame {
         if (_winner == playerA.addr) {
             playerA.balance += betAmount;
             playerB.balance -= betAmount;
-            emit Incentivized(playerA.addr, betAmount, playerA.balance);
+            emit Incentivize(playerA.addr, betAmount);
         } else {
             playerB.balance += betAmount;
             playerA.balance -= betAmount;
-            emit Incentivized(playerB.addr, betAmount, playerB.balance);
+            emit Incentivize(playerB.addr, betAmount);
         }
     }
 
@@ -179,9 +184,15 @@ contract RPSGame {
     function resetGame() internal {
         playerA.move = Move.None;
         playerA.submitted = false;
+        playerA.revealed = false;
         playerB.move = Move.None;
         playerB.submitted = false;
-        gameStage = GameStage.Open;
+        playerB.revealed = false;
+        if (playerA.balance >= betAmount && playerB.balance >= betAmount) {
+            gameStage = GameStage.BetsDeposited;
+        } else {
+            gameStage = GameStage.Open;
+        }
         emit GameStageChanged(GameStage.Open);
         emit ResetGame();
     }

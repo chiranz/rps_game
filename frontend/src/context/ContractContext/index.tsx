@@ -4,17 +4,20 @@ import { getProvider } from "../../provider";
 import { useWallet } from "../WalletContext";
 import { gameReducer } from "./reducer";
 import { initialState } from "./state";
-import { getContractAddress } from "../../helpers";
+import { getContractAddress, getTruncatedAddress } from "../../helpers";
 // RPS Game Contract ABI
 import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
 import {
   depositBet,
   fetchGameState,
+  getFormattedPlayer,
+  revealMove,
   StateActionType,
   submitMove,
 } from "./actions";
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
+import { useMessage } from "../MessageContext";
 interface ContractState extends GameState {
   submitMove?: (move: Move, salt: string) => void;
   revealMove?: (move: Move, salt: string) => void;
@@ -29,6 +32,7 @@ type ProviderProps = {
 };
 export const ContractProvider = ({ children }: ProviderProps) => {
   const { walletAddress } = useWallet();
+  const { setGlobalMessage } = useMessage();
 
   const [state, dispatch] = React.useReducer(gameReducer, initialState);
   const [contract, setContract] = React.useState<RPSGame>();
@@ -73,6 +77,91 @@ export const ContractProvider = ({ children }: ProviderProps) => {
       // Refetch Player on action and opponent on event
     }
   }
+  async function handleRevealMove(move: Move, salt: string) {
+    if (contract) {
+      await revealMove(contract, move, salt);
+    }
+  }
+  if (contract) {
+    // GAMESTAGECHANGED EVENT
+    contract.on("GameStageChanged", (gameStage) => {
+      dispatch({
+        type: StateActionType.UpdateGameStage,
+        payload: gameStage,
+      });
+
+      setGlobalMessage({
+        message: "Game Stage changed",
+        type: "info",
+      });
+      setTimeout(() => {
+        setGlobalMessage({});
+      }, 3000);
+    });
+
+    // WINNER EVENT
+    contract.on("Winner", (winner) => {
+      const message =
+        winner === walletAddress
+          ? "You won the game!"
+          : `${getTruncatedAddress(winner)} won the game!`;
+      if (winner === walletAddress) {
+        setGlobalMessage({
+          message,
+          type: "info",
+        });
+      } else {
+      }
+    });
+
+    // UPDATE PLAYER
+    contract.on("Deposit", async (address) => {
+      // Fetch the player
+      const player = await contract.getPlayer(address);
+      const formattedPlayer = getFormattedPlayer(player);
+      if (address === walletAddress) {
+        dispatch({
+          type: StateActionType.UpdatePlayer,
+          payload: formattedPlayer,
+        });
+      } else {
+        dispatch({
+          type: StateActionType.UpdateOpponent,
+          payload: formattedPlayer,
+        });
+      }
+    });
+    contract.on("SubmitMove", async (address) => {
+      const player = await contract.getPlayer(address);
+      const formattedPlayer = getFormattedPlayer(player);
+      if (address === walletAddress) {
+        dispatch({
+          type: StateActionType.UpdatePlayer,
+          payload: formattedPlayer,
+        });
+      } else {
+        dispatch({
+          type: StateActionType.UpdateOpponent,
+          payload: formattedPlayer,
+        });
+      }
+    });
+    contract.on("RevealMove", async (address) => {
+      const player = await contract.getPlayer(address);
+      const formattedPlayer = getFormattedPlayer(player);
+      if (address === walletAddress) {
+        dispatch({
+          type: StateActionType.UpdatePlayer,
+          payload: formattedPlayer,
+        });
+      } else {
+        dispatch({
+          type: StateActionType.UpdateOpponent,
+          payload: formattedPlayer,
+        });
+      }
+    });
+  }
 
   return (
     <ContractContext.Provider
@@ -80,6 +169,7 @@ export const ContractProvider = ({ children }: ProviderProps) => {
         ...state,
         depositBet: handleDeposit,
         submitMove: handleMoveSubmit,
+        revealMove: handleRevealMove,
       }}
     >
       {children}

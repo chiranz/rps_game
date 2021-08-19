@@ -139,3 +139,13 @@ export async function submitMove(
   const tx = await contract.submitMove(hashedMove);
   await tx.wait();
 }
+
+export async function revealMove(
+  contract: RPSGame,
+  move: Move,
+  salt: string
+): Promise<void> {
+  const _bsalt = ethers.utils.id(salt);
+  const tx = await contract.revealMove(move, _bsalt);
+  await tx.wait();
+}

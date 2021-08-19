@@ -26,6 +26,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
     "betAmount()": FunctionFragment;
     "depositBet()": FunctionFragment;
     "gameStage()": FunctionFragment;
+    "getPlayer(address)": FunctionFragment;
     "playerA()": FunctionFragment;
     "playerB()": FunctionFragment;
     "revealMove(uint8,bytes32)": FunctionFragment;
@@ -39,6 +40,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "gameStage", values?: undefined): string;
+  encodeFunctionData(functionFragment: "getPlayer", values: [string]): string;
   encodeFunctionData(functionFragment: "playerA", values?: undefined): string;
   encodeFunctionData(functionFragment: "playerB", values?: undefined): string;
   encodeFunctionData(
@@ -57,6 +59,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "betAmount", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "depositBet", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "gameStage", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getPlayer", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerB", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "revealMove", data: BytesLike): Result;
@@ -67,19 +70,23 @@ interface RPSGameInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "Draw()": EventFragment;
+    "Deposit(address)": EventFragment;
     "GameComplete()": EventFragment;
     "GameStageChanged(uint8)": EventFragment;
-    "Incentivized(address,uint256,uint256)": EventFragment;
+    "Incentivize(address,uint256)": EventFragment;
     "ResetGame()": EventFragment;
+    "RevealMove(address)": EventFragment;
+    "SubmitMove(address)": EventFragment;
     "Winner(address)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "Draw"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GameComplete"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GameStageChanged"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Incentivized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Incentivize"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ResetGame"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RevealMove"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SubmitMove"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Winner"): EventFragment;
 }
 
@@ -115,6 +122,46 @@ export class RPSGame extends Contract {
 
     "gameStage()"(overrides?: CallOverrides): Promise<{
       0: number;
+    }>;
+
+    getPlayer(
+      _player: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: {
+        move: number;
+        hashedMove: string;
+        balance: BigNumber;
+        addr: string;
+        submitted: boolean;
+        revealed: boolean;
+        0: number;
+        1: string;
+        2: BigNumber;
+        3: string;
+        4: boolean;
+        5: boolean;
+      };
+    }>;
+
+    "getPlayer(address)"(
+      _player: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: {
+        move: number;
+        hashedMove: string;
+        balance: BigNumber;
+        addr: string;
+        submitted: boolean;
+        revealed: boolean;
+        0: number;
+        1: string;
+        2: BigNumber;
+        3: string;
+        4: boolean;
+        5: boolean;
+      };
     }>;
 
     playerA(overrides?: CallOverrides): Promise<{
@@ -216,6 +263,42 @@ export class RPSGame extends Contract {
 
   "gameStage()"(overrides?: CallOverrides): Promise<number>;
 
+  getPlayer(
+    _player: string,
+    overrides?: CallOverrides
+  ): Promise<{
+    move: number;
+    hashedMove: string;
+    balance: BigNumber;
+    addr: string;
+    submitted: boolean;
+    revealed: boolean;
+    0: number;
+    1: string;
+    2: BigNumber;
+    3: string;
+    4: boolean;
+    5: boolean;
+  }>;
+
+  "getPlayer(address)"(
+    _player: string,
+    overrides?: CallOverrides
+  ): Promise<{
+    move: number;
+    hashedMove: string;
+    balance: BigNumber;
+    addr: string;
+    submitted: boolean;
+    revealed: boolean;
+    0: number;
+    1: string;
+    2: BigNumber;
+    3: string;
+    4: boolean;
+    5: boolean;
+  }>;
+
   playerA(overrides?: CallOverrides): Promise<{
     move: number;
     hashedMove: string;
@@ -315,6 +398,42 @@ export class RPSGame extends Contract {
 
     "gameStage()"(overrides?: CallOverrides): Promise<number>;
 
+    getPlayer(
+      _player: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      move: number;
+      hashedMove: string;
+      balance: BigNumber;
+      addr: string;
+      submitted: boolean;
+      revealed: boolean;
+      0: number;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
+    }>;
+
+    "getPlayer(address)"(
+      _player: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      move: number;
+      hashedMove: string;
+      balance: BigNumber;
+      addr: string;
+      submitted: boolean;
+      revealed: boolean;
+      0: number;
+      1: string;
+      2: BigNumber;
+      3: string;
+      4: boolean;
+      5: boolean;
+    }>;
+
     playerA(overrides?: CallOverrides): Promise<{
       move: number;
       hashedMove: string;
@@ -403,19 +522,19 @@ export class RPSGame extends Contract {
   };
 
   filters: {
-    Draw(): EventFilter;
+    Deposit(depositor: string | null): EventFilter;
 
     GameComplete(): EventFilter;
 
     GameStageChanged(gameStage: null): EventFilter;
 
-    Incentivized(
-      _winner: string | null,
-      betAmount: null,
-      balance: null
-    ): EventFilter;
+    Incentivize(undefined: string | null, amount: null): EventFilter;
 
     ResetGame(): EventFilter;
+
+    RevealMove(player: string | null): EventFilter;
+
+    SubmitMove(player: string | null): EventFilter;
 
     Winner(_winner: string | null): EventFilter;
   };
@@ -432,6 +551,13 @@ export class RPSGame extends Contract {
     gameStage(overrides?: CallOverrides): Promise<BigNumber>;
 
     "gameStage()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getPlayer(_player: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    "getPlayer(address)"(
+      _player: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     playerA(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -480,6 +606,16 @@ export class RPSGame extends Contract {
     gameStage(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "gameStage()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getPlayer(
+      _player: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "getPlayer(address)"(
+      _player: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     playerA(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

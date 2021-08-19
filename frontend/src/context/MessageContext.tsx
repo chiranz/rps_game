@@ -1,8 +1,8 @@
 import React, { ReactNode } from "react";
 
 interface MessageProps {
-  globalMessage?: GlobalMessage;
-  setGlobalMessage?: React.Dispatch<React.SetStateAction<GlobalMessage>>;
+  globalMessage: GlobalMessage;
+  setGlobalMessage: React.Dispatch<React.SetStateAction<GlobalMessage>>;
 }
 
 type ProviderProps = {
@@ -13,7 +13,10 @@ interface GlobalMessage {
   type?: "success" | "error" | "info" | "warning";
   message?: string;
 }
-export const MessageContext = React.createContext<MessageProps>({});
+export const MessageContext = React.createContext<MessageProps>({
+  globalMessage: {},
+  setGlobalMessage: () => {},
+});
 
 export const MessageProvider = ({ children }: ProviderProps) => {
   const [globalMessage, setGlobalMessage] = React.useState<GlobalMessage>({});

@@ -54,6 +54,12 @@ describe("RPS Game", function () {
     let betAmount = await rpsGameContract.betAmount();
     assert.equal(ethers.utils.formatEther(betAmount), BET_AMOUNT);
   });
+  it("should fetch both players", async function () {
+    const playerA = await rpsGameContract.getPlayer(signerA.address);
+    const playerB = await rpsGameContract.getPlayer(signerB.address);
+    assert.equal(playerA.addr, signerA.address);
+    assert.equal(playerB.addr, signerB.address);
+  });
 
   it("Should set deployer as player A with 0 balance", async function () {
     const player = await rpsGameContract.playerA();
@@ -174,6 +180,8 @@ describe("RPS Game", function () {
     assert.equal(playerB.move, Move.None);
     assert.equal(playerA.submitted, false);
     assert.equal(playerB.submitted, false);
+    assert.equal(playerA.revealed, false);
+    assert.equal(playerB.revealed, false);
     assert.equal(gameStage, GameStage.Open);
   });
 });
