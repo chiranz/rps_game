@@ -11,6 +11,8 @@ export function gameReducer(state: GameState, action: StateActions): GameState {
       return { ...state, opponent: action.payload };
     case StateActionType.UpdateGameStage:
       return { ...state, gameStage: action.payload };
+    case StateActionType.UpdateWinner:
+      return { ...state, winner: action.payload };
 
     default:
       return state;

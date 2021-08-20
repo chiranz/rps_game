@@ -22,10 +22,8 @@ export const getGameStatusText = (id: number): string => {
 };
 
 export default function GameStatsCard({
-  gameStage,
   betAmount,
 }: {
-  gameStage: any;
   betAmount: string | null;
 }): ReactElement {
   const { depositBet, isPlayer } = useContract();
@@ -53,8 +51,6 @@ export default function GameStatsCard({
         </h1>
         <div className="flex flex-col text-center">
           <div>Bet Amt: {betAmount} ETH</div>
-          <h3>Game Stage</h3>
-          <button>{getGameStatusText(gameStage)}</button>
         </div>
       </div>
       <div className="mt-6">

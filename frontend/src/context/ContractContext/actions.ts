@@ -6,6 +6,11 @@ export enum StateActionType {
   UpdateOpponent,
   UpdateGameStage,
   UpdateGameState,
+  UpdateWinner,
+}
+export interface UpdateWinner {
+  type: StateActionType.UpdateWinner;
+  payload: string;
 }
 export interface UpdatePlayer {
   type: StateActionType.UpdatePlayer;
@@ -28,6 +33,7 @@ export type StateActions =
   | UpdatePlayer
   | UpdateOpponent
   | UpdateGameStage
+  | UpdateWinner
   | UpdateGameState;
 
 export enum ActionType {
@@ -93,6 +99,7 @@ export async function fetchGameState(
   const _playerB = await contract.playerB();
   const _betAmount = await contract.betAmount();
   const _gameStage = await contract.gameStage();
+  const _winner = await contract.winner();
   const betAmount_ = ethers.utils.formatEther(_betAmount);
   const playerA: Player = getFormattedPlayer(_playerA);
   const playerB: Player = getFormattedPlayer(_playerB);
@@ -111,6 +118,7 @@ export async function fetchGameState(
     betAmount: betAmount_,
     gameStage: _gameStage,
     isPlayer: [player.addr, opponent.addr].includes(connectedAddress),
+    winner: _winner,
   };
 }
 
@@ -129,7 +137,7 @@ const getHashedMove = (_move: Move, _salt: string) => {
   return hashedMove;
 };
 
-export async function submitMove(
+export async function _submitMove(
   contract: RPSGame,
   move: Move,
   salt: string
@@ -140,12 +148,17 @@ export async function submitMove(
   await tx.wait();
 }
 
-export async function revealMove(
+export async function _revealMove(
   contract: RPSGame,
   move: Move,
   salt: string
 ): Promise<void> {
   const _bsalt = ethers.utils.id(salt);
   const tx = await contract.revealMove(move, _bsalt);
+  await tx.wait();
+}
+
+export async function _resetGame(contract: RPSGame) {
+  const tx = await contract.resetGame();
   await tx.wait();
 }

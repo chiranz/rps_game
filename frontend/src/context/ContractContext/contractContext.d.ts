@@ -25,4 +25,5 @@ export interface GameState {
   gameStage: GameStage | null;
   betAmount: string | null;
   isPlayer?: boolean;
+  winner?: string | null;
 }

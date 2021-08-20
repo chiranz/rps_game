@@ -173,6 +173,7 @@ describe("RPS Game", function () {
     assert.equal(ethers.utils.formatEther(playerA.balance), "0.2");
   });
   it("Should reset the game.", async function () {
+    await rpsGameContract.resetGame();
     const gameStage = await rpsGameContract.gameStage();
     const playerA = await rpsGameContract.playerA();
     const playerB = await rpsGameContract.playerB();

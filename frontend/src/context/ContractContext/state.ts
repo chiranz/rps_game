@@ -6,4 +6,5 @@ export const initialState: GameState = {
   gameStage: 0,
   betAmount: "",
   isPlayer: false,
+  winner: null,
 };

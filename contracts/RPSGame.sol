@@ -20,6 +20,7 @@ contract RPSGame {
     Player public playerB;
     uint256 public betAmount;
     GameStage public gameStage;
+    address public winner;
 
     struct Player {
         Move move;
@@ -42,7 +43,6 @@ contract RPSGame {
     event Winner(address indexed _winner);
     event Deposit(address indexed depositor);
     event GameComplete();
-    event Incentivize(address indexed, uint256 amount);
     event SubmitMove(address indexed player);
     event RevealMove(address indexed player);
 
@@ -131,11 +131,11 @@ contract RPSGame {
         );
         address _winner = getWinner();
         if (_winner != address(0)) {
+            winner = _winner;
             emit Winner(_winner);
+            gameStage = GameStage.Completed;
             incentivize(_winner);
         }
-
-        resetGame();
     }
 
     function incentivize(address _winner) internal {
@@ -143,11 +143,9 @@ contract RPSGame {
         if (_winner == playerA.addr) {
             playerA.balance += betAmount;
             playerB.balance -= betAmount;
-            emit Incentivize(playerA.addr, betAmount);
         } else {
             playerB.balance += betAmount;
             playerA.balance -= betAmount;
-            emit Incentivize(playerB.addr, betAmount);
         }
     }
 
@@ -181,7 +179,13 @@ contract RPSGame {
         return playerB.addr;
     }
 
-    function resetGame() internal {
+    modifier isCompleted() {
+        require(gameStage == GameStage.Completed);
+        _;
+    }
+
+    // TODO: Should be an external function
+    function resetGame() external isCompleted {
         playerA.move = Move.None;
         playerA.submitted = false;
         playerA.revealed = false;
@@ -193,7 +197,6 @@ contract RPSGame {
         } else {
             gameStage = GameStage.Open;
         }
-        emit GameStageChanged(GameStage.Open);
         emit ResetGame();
     }
 }

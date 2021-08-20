@@ -4,16 +4,16 @@ import { getProvider } from "../../provider";
 import { useWallet } from "../WalletContext";
 import { gameReducer } from "./reducer";
 import { initialState } from "./state";
-import { getContractAddress, getTruncatedAddress } from "../../helpers";
-// RPS Game Contract ABI
+import { getContractAddress } from "../../helpers";
 import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
 import {
   depositBet,
   fetchGameState,
   getFormattedPlayer,
-  revealMove,
+  _revealMove,
   StateActionType,
-  submitMove,
+  _submitMove,
+  _resetGame,
 } from "./actions";
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
@@ -23,6 +23,7 @@ interface ContractState extends GameState {
   revealMove?: (move: Move, salt: string) => void;
   depositBet?: () => void;
   withdrawFund?: () => void;
+  resetGame?: () => void;
 }
 
 export const ContractContext = React.createContext<ContractState>(initialState);
@@ -73,13 +74,18 @@ export const ContractProvider = ({ children }: ProviderProps) => {
   async function handleMoveSubmit(move: Move, salt: string) {
     if (contract) {
       // Set loading
-      await submitMove(contract, move, salt);
+      await _submitMove(contract, move, salt);
       // Refetch Player on action and opponent on event
     }
   }
   async function handleRevealMove(move: Move, salt: string) {
     if (contract) {
-      await revealMove(contract, move, salt);
+      await _revealMove(contract, move, salt);
+    }
+  }
+  async function handleResetGame() {
+    if (contract) {
+      await _resetGame(contract);
     }
   }
   if (contract) {
@@ -101,22 +107,14 @@ export const ContractProvider = ({ children }: ProviderProps) => {
 
     // WINNER EVENT
     contract.on("Winner", (winner) => {
-      const message =
-        winner === walletAddress
-          ? "You won the game!"
-          : `${getTruncatedAddress(winner)} won the game!`;
-      if (winner === walletAddress) {
-        setGlobalMessage({
-          message,
-          type: "info",
-        });
-      } else {
-      }
+      dispatch({
+        type: StateActionType.UpdateWinner,
+        payload: winner,
+      });
     });
 
-    // UPDATE PLAYER
-    contract.on("Deposit", async (address) => {
-      // Fetch the player
+    // Fetch Player
+    const fetchPlayer = async (address: string) => {
       const player = await contract.getPlayer(address);
       const formattedPlayer = getFormattedPlayer(player);
       if (address === walletAddress) {
@@ -130,38 +128,29 @@ export const ContractProvider = ({ children }: ProviderProps) => {
           payload: formattedPlayer,
         });
       }
+    };
+    contract.on("Deposit", async (address) => {
+      fetchPlayer(address);
     });
     contract.on("SubmitMove", async (address) => {
-      const player = await contract.getPlayer(address);
-      const formattedPlayer = getFormattedPlayer(player);
-      if (address === walletAddress) {
-        dispatch({
-          type: StateActionType.UpdatePlayer,
-          payload: formattedPlayer,
-        });
-      } else {
-        dispatch({
-          type: StateActionType.UpdateOpponent,
-          payload: formattedPlayer,
-        });
-      }
+      fetchPlayer(address);
     });
     contract.on("RevealMove", async (address) => {
-      const player = await contract.getPlayer(address);
-      const formattedPlayer = getFormattedPlayer(player);
-      if (address === walletAddress) {
-        dispatch({
-          type: StateActionType.UpdatePlayer,
-          payload: formattedPlayer,
-        });
-      } else {
-        dispatch({
-          type: StateActionType.UpdateOpponent,
-          payload: formattedPlayer,
-        });
-      }
+      fetchPlayer(address);
+    });
+    contract.on("ResetGame", async () => {
+      const gameState = await fetchGameState(contract, walletAddress);
+      dispatch({
+        type: StateActionType.UpdateGameState,
+        payload: gameState,
+      });
     });
   }
+  // TODO: add winner to state
+  // TODO: Update entire state on winner event
+  // TODO: Replay should reset the game if gamestage is completed
+  // TODO: How do you handle draw event? What are the things you want to update
+  // TODO: How do you update the ui on revealed? Opps! you won and Opps you lost
 
   return (
     <ContractContext.Provider
@@ -170,6 +159,7 @@ export const ContractProvider = ({ children }: ProviderProps) => {
         depositBet: handleDeposit,
         submitMove: handleMoveSubmit,
         revealMove: handleRevealMove,
+        resetGame: handleResetGame,
       }}
     >
       {children}

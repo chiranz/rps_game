@@ -29,8 +29,10 @@ interface RPSGameInterface extends ethers.utils.Interface {
     "getPlayer(address)": FunctionFragment;
     "playerA()": FunctionFragment;
     "playerB()": FunctionFragment;
+    "resetGame()": FunctionFragment;
     "revealMove(uint8,bytes32)": FunctionFragment;
     "submitMove(bytes32)": FunctionFragment;
+    "winner()": FunctionFragment;
     "withdrawFund()": FunctionFragment;
   };
 
@@ -43,6 +45,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "getPlayer", values: [string]): string;
   encodeFunctionData(functionFragment: "playerA", values?: undefined): string;
   encodeFunctionData(functionFragment: "playerB", values?: undefined): string;
+  encodeFunctionData(functionFragment: "resetGame", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "revealMove",
     values: [BigNumberish, BytesLike]
@@ -51,6 +54,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
     functionFragment: "submitMove",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "winner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "withdrawFund",
     values?: undefined
@@ -62,8 +66,10 @@ interface RPSGameInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "getPlayer", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "playerB", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "resetGame", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "revealMove", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "submitMove", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "winner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "withdrawFund",
     data: BytesLike
@@ -73,7 +79,6 @@ interface RPSGameInterface extends ethers.utils.Interface {
     "Deposit(address)": EventFragment;
     "GameComplete()": EventFragment;
     "GameStageChanged(uint8)": EventFragment;
-    "Incentivize(address,uint256)": EventFragment;
     "ResetGame()": EventFragment;
     "RevealMove(address)": EventFragment;
     "SubmitMove(address)": EventFragment;
@@ -83,7 +88,6 @@ interface RPSGameInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GameComplete"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "GameStageChanged"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Incentivize"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ResetGame"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RevealMove"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SubmitMove"): EventFragment;
@@ -224,6 +228,10 @@ export class RPSGame extends Contract {
       5: boolean;
     }>;
 
+    resetGame(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "resetGame()"(overrides?: Overrides): Promise<ContractTransaction>;
+
     revealMove(
       _move: BigNumberish,
       _salt: BytesLike,
@@ -245,6 +253,14 @@ export class RPSGame extends Contract {
       _hashedMove: BytesLike,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
+
+    winner(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "winner()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
 
     withdrawFund(overrides?: Overrides): Promise<ContractTransaction>;
 
@@ -359,6 +375,10 @@ export class RPSGame extends Contract {
     5: boolean;
   }>;
 
+  resetGame(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "resetGame()"(overrides?: Overrides): Promise<ContractTransaction>;
+
   revealMove(
     _move: BigNumberish,
     _salt: BytesLike,
@@ -380,6 +400,10 @@ export class RPSGame extends Contract {
     _hashedMove: BytesLike,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
+
+  winner(overrides?: CallOverrides): Promise<string>;
+
+  "winner()"(overrides?: CallOverrides): Promise<string>;
 
   withdrawFund(overrides?: Overrides): Promise<ContractTransaction>;
 
@@ -494,6 +518,10 @@ export class RPSGame extends Contract {
       5: boolean;
     }>;
 
+    resetGame(overrides?: CallOverrides): Promise<void>;
+
+    "resetGame()"(overrides?: CallOverrides): Promise<void>;
+
     revealMove(
       _move: BigNumberish,
       _salt: BytesLike,
@@ -516,6 +544,10 @@ export class RPSGame extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    winner(overrides?: CallOverrides): Promise<string>;
+
+    "winner()"(overrides?: CallOverrides): Promise<string>;
+
     withdrawFund(overrides?: CallOverrides): Promise<void>;
 
     "withdrawFund()"(overrides?: CallOverrides): Promise<void>;
@@ -527,8 +559,6 @@ export class RPSGame extends Contract {
     GameComplete(): EventFilter;
 
     GameStageChanged(gameStage: null): EventFilter;
-
-    Incentivize(undefined: string | null, amount: null): EventFilter;
 
     ResetGame(): EventFilter;
 
@@ -567,6 +597,10 @@ export class RPSGame extends Contract {
 
     "playerB()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    resetGame(overrides?: Overrides): Promise<BigNumber>;
+
+    "resetGame()"(overrides?: Overrides): Promise<BigNumber>;
+
     revealMove(
       _move: BigNumberish,
       _salt: BytesLike,
@@ -588,6 +622,10 @@ export class RPSGame extends Contract {
       _hashedMove: BytesLike,
       overrides?: Overrides
     ): Promise<BigNumber>;
+
+    winner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "winner()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     withdrawFund(overrides?: Overrides): Promise<BigNumber>;
 
@@ -625,6 +663,10 @@ export class RPSGame extends Contract {
 
     "playerB()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    resetGame(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "resetGame()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+
     revealMove(
       _move: BigNumberish,
       _salt: BytesLike,
@@ -646,6 +688,10 @@ export class RPSGame extends Contract {
       _hashedMove: BytesLike,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
+
+    winner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "winner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     withdrawFund(overrides?: Overrides): Promise<PopulatedTransaction>;
 

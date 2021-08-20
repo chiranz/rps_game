@@ -10,8 +10,6 @@ interface PlayerWithTag extends Player {
 export default function PlayerCard({
   addr,
   balance,
-  move,
-  hashedMove,
   revealed,
   submitted,
   tag,

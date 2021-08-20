@@ -5,15 +5,14 @@ import GameStatsCard from "./GameStatsCard";
 import PlayerCard from "./PlayerCard";
 
 export default function Leaderboard(): ReactElement {
-  const { currentPlayer, betAmount, opponent, gameStage, isPlayer } =
-    useContract();
+  const { currentPlayer, betAmount, opponent, isPlayer } = useContract();
   console.log({ isPlayer });
   return (
     <div
       className={joinClasses("flex", "justify-between", "items-center", "mt-4")}
     >
       <PlayerCard {...currentPlayer} tag="player" betAmount={betAmount} />
-      <GameStatsCard gameStage={gameStage} betAmount={betAmount} />
+      <GameStatsCard betAmount={betAmount} />
       <PlayerCard {...opponent} tag="opponent" betAmount={betAmount} />
     </div>
   );
