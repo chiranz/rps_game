@@ -85,11 +85,7 @@ export default function SubmitMove({
               <span className="font-bold capitalize">{userChoice.value}</span>{" "}
             </h1>
             {getOptionButton(userChoice)}
-            <Button
-              disabled={!isPlayer}
-              className="block"
-              onClick={() => setUserChoice(null)}
-            >
+            <Button className="block" onClick={() => setUserChoice(null)}>
               Change Move
             </Button>
           </div>
