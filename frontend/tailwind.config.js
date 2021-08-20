@@ -7,6 +7,10 @@ module.exports = {
         "3m": "auto 1fr auto",
         "2m": "auto 1fr",
       },
+      animation: {
+        bounce200: "bounce 1s infinite 200ms",
+        bounce400: "bounce 1s infinite 400ms",
+      },
     },
   },
   variants: {
