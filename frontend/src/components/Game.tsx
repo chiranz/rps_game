@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { ContractProvider } from "../context/ContractContext";
+import { ContractProvider } from "../context/RPSGameContractContext";
 import Leaderboard from "./Leaderboard";
 import Playground from "./Playground";
 import { useWallet } from "../context/WalletContext";

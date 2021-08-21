@@ -1,11 +1,11 @@
 import React, { ReactElement } from "react";
-import { useContract } from "../context/ContractContext";
+import { useRPSGameContract } from "../context/RPSGameContractContext";
 import { joinClasses } from "../helpers";
 import GameStatsCard from "./GameStatsCard";
 import PlayerCard from "./PlayerCard";
 
 export default function Leaderboard(): ReactElement {
-  const { currentPlayer, betAmount, opponent, isPlayer } = useContract();
+  const { currentPlayer, betAmount, opponent, isPlayer } = useRPSGameContract();
   console.log({ isPlayer });
   return (
     <div

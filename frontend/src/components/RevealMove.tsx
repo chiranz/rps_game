@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { useContract } from "../context/ContractContext";
+import { useRPSGameContract } from "../context/RPSGameContractContext";
 import { useWallet } from "../context/WalletContext";
 import { joinClasses } from "../helpers";
 import Button from "./Button";
@@ -23,7 +23,7 @@ export default function RevealMove({
 }: RevealMoveProps): ReactElement {
   const { walletAddress } = useWallet();
   const { revealMove, currentPlayer, opponent, isPlayer, winner, resetGame } =
-    useContract();
+    useRPSGameContract();
   const handleMoveReveal = () => {
     console.log("I am trying");
     if (revealMove && move) {

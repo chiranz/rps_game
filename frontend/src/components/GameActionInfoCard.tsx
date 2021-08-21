@@ -20,9 +20,6 @@ export default function GameActionInfoCard({
         "justify-center",
         "w-full",
         "h-full",
-        "border",
-
-        "border-blue-500",
         "py-4",
         "rounded"
       )}

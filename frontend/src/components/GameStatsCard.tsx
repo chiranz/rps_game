@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { useContract } from "../context/ContractContext";
+import { useRPSGameContract } from "../context/RPSGameContractContext";
 import { joinClasses } from "../helpers";
 import Button from "./Button";
 
@@ -26,7 +26,7 @@ export default function GameStatsCard({
 }: {
   betAmount: string | null;
 }): ReactElement {
-  const { depositBet, isPlayer } = useContract();
+  const { depositBet, isPlayer } = useRPSGameContract();
   return (
     <div
       className={joinClasses(

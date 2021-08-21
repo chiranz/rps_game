@@ -3,7 +3,7 @@ import rock from "../images/icon-rock.svg";
 import paper from "../images/icon-paper.svg";
 import scissors from "../images/icon-scissors.svg";
 import OptionButton from "./OptionButton";
-import { useContract } from "../context/ContractContext";
+import { useRPSGameContract } from "../context/RPSGameContractContext";
 import Button from "./Button";
 import InputField from "./InputField";
 
@@ -36,7 +36,8 @@ export default function SubmitMove({
   setSalt,
   setMove,
 }: SubmitMoveProps): ReactElement {
-  const { gameStage, submitMove, currentPlayer, isPlayer } = useContract();
+  const { gameStage, submitMove, currentPlayer, isPlayer } =
+    useRPSGameContract();
   const [userChoice, setUserChoice] = useState<Option | null>(null);
   const handleOptionChoose = (e: React.MouseEvent<HTMLDivElement>) => {
     const _choice = e.currentTarget.getAttribute("data-choice");

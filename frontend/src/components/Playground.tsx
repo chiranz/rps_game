@@ -3,7 +3,7 @@ import rock from "../images/icon-rock.svg";
 import paper from "../images/icon-paper.svg";
 import scissors from "../images/icon-scissors.svg";
 import OptionButton from "./OptionButton";
-import { useContract } from "../context/ContractContext";
+import { useRPSGameContract } from "../context/RPSGameContractContext";
 import GameActionInfoCard from "./GameActionInfoCard";
 import SubmitMove from "./SubmitMove";
 import RevealMove from "./RevealMove";
@@ -43,7 +43,8 @@ export const getOptionButton = (
 };
 
 export default function Playground(): ReactElement {
-  const { gameStage, currentPlayer, betAmount, opponent } = useContract();
+  const { gameStage, currentPlayer, betAmount, opponent } =
+    useRPSGameContract();
   const [salt, setSalt] = useState("");
   const [move, setMove] = useState(0);
   console.log(gameStage);
@@ -53,7 +54,7 @@ export default function Playground(): ReactElement {
       {gameStage === 0 &&
         (parseFloat(currentPlayer?.balance || "0") <
         parseFloat(betAmount || "0") ? (
-          <GameActionInfoCard message="Please submit the bet first" />
+          <GameActionInfoCard message="Please deposit the bet first" />
         ) : parseFloat(opponent?.balance || "0") <
           parseFloat(betAmount || "0") ? (
           <GameActionInfoCard

@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Player } from "../context/ContractContext/contractContext";
+import { Player } from "../context/RPSGameContractContext/contractContext";
 import { getTruncatedAddress, joinClasses } from "../helpers";
 
 interface PlayerWithTag extends Player {

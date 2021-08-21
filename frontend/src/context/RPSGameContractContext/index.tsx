@@ -167,4 +167,4 @@ export const ContractProvider = ({ children }: ProviderProps) => {
   );
 };
 
-export const useContract = () => React.useContext(ContractContext);
+export const useRPSGameContract = () => React.useContext(ContractContext);
