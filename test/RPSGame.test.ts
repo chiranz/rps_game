@@ -46,6 +46,7 @@ describe("RPS Game", function () {
     )) as unknown as RPSGame__factory;
     rpsGameContract = await RPSGameFactory.deploy(
       ethers.utils.parseEther(BET_AMOUNT),
+      signerA.address,
       signerB.address
     );
     await rpsGameContract.deployed();

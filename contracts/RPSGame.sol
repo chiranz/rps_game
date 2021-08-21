@@ -31,10 +31,14 @@ contract RPSGame {
         bool revealed;
     }
 
-    constructor(uint256 _betAmount, address _opponent) payable {
-        require(msg.sender != _opponent, "You cannot play against yourself");
+    constructor(
+        uint256 _betAmount,
+        address _player,
+        address _opponent
+    ) payable {
+        require(_player != _opponent, "You cannot play against yourself");
         betAmount = _betAmount;
-        playerA.addr = msg.sender;
+        playerA.addr = _player;
         playerB.addr = _opponent;
     }
 
