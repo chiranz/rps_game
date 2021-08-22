@@ -83,6 +83,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
     "RevealMove(address)": EventFragment;
     "SubmitMove(address)": EventFragment;
     "Winner(address)": EventFragment;
+    "Withdraw(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
@@ -92,6 +93,7 @@ interface RPSGameInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RevealMove"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SubmitMove"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Winner"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
 
 export class RPSGame extends Contract {
@@ -567,6 +569,8 @@ export class RPSGame extends Contract {
     SubmitMove(player: string | null): EventFilter;
 
     Winner(_winner: string | null): EventFilter;
+
+    Withdraw(player: string | null, amount: null): EventFilter;
   };
 
   estimateGas: {

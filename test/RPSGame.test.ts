@@ -173,6 +173,18 @@ describe("RPS Game", function () {
     const playerA = await rpsGameContract.playerA();
     assert.equal(ethers.utils.formatEther(playerA.balance), "0.2");
   });
+  it("should allow fund owner to withdraw fund and update balance", async function () {
+    const balBefore = await signerA.getBalance();
+    await rpsGameContract.withdrawFund();
+    const balAfter = await signerA.getBalance();
+    const diff = balAfter.sub(balBefore);
+    assert(parseFloat(ethers.utils.formatEther(diff)) > 0.18);
+
+    // Should set player's balance to zero
+    const playerA = await rpsGameContract.playerA();
+    assert.equal(ethers.utils.formatEther(playerA.balance), "0.0");
+    // Should emit WithdrawFund event
+  });
   it("Should reset the game.", async function () {
     await rpsGameContract.resetGame();
     const gameStage = await rpsGameContract.gameStage();

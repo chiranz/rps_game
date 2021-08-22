@@ -13,6 +13,7 @@ import {
   StateActionType,
   _submitMove,
   _resetGame,
+  withdrawFund,
 } from "./actions";
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
@@ -64,11 +65,17 @@ export const ContractProvider = ({ children }: ProviderProps) => {
       await depositBet(contract, state.betAmount || "", setPending);
     }
   }
+  async function handleWithdraw() {
+    if (contract) {
+      await withdrawFund(contract, setPending);
+    }
+  }
   async function handleMoveSubmit(move: Move, salt: string) {
     if (contract) {
       await _submitMove(contract, move, salt, setPending);
     }
   }
+
   async function handleRevealMove(move: Move, salt: string) {
     if (contract) {
       await _revealMove(contract, move, salt, setPending);
@@ -129,6 +136,10 @@ export const ContractProvider = ({ children }: ProviderProps) => {
     contract.on("RevealMove", async (address) => {
       fetchPlayer(address);
     });
+    contract.on("Withdraw", async (address) => {
+      fetchPlayer(address);
+    });
+
     contract.on("ResetGame", async () => {
       const gameState = await fetchGameState(contract, walletAddress);
       dispatch({
@@ -147,6 +158,7 @@ export const ContractProvider = ({ children }: ProviderProps) => {
         submitMove: handleMoveSubmit,
         revealMove: handleRevealMove,
         resetGame: handleResetGame,
+        withdrawFund: handleWithdraw,
       }}
     >
       {children}

@@ -16,7 +16,9 @@ export const getTruncatedAddress = (address: string = "") => {
 
 export const getRPSGameFactoryAddress = () => {
   // Rinkeby Address
-  return "0xD108ae5384de2e2DC0f3855e75cB882E39929c82";
+  return "0xb0f9Dfb7c06E2e9b9BaC5Ac397D686C64be87e7B";
+  // Old
+  // return "0xD108ae5384de2e2DC0f3855e75cB882E39929c82";
   // Localhost
-  // return "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
+  // return "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 };

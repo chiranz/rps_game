@@ -49,6 +49,7 @@ contract RPSGame {
     event GameComplete();
     event SubmitMove(address indexed player);
     event RevealMove(address indexed player);
+    event Withdraw(address indexed player, uint256 amount);
 
     modifier isPlayer() {
         require(
@@ -168,7 +169,10 @@ contract RPSGame {
             player.balance > 0,
             "RPSGame: You don't have anything to withdraw!"
         );
-        payable(player.addr).transfer(player.balance);
+        uint256 balance = player.balance;
+        payable(player.addr).transfer(balance);
+        player.balance = 0;
+        emit Withdraw(player.addr, balance);
     }
 
     function getWinner() internal view returns (address) {

@@ -127,11 +127,20 @@ export async function depositBet(
   betAmount: string,
   setPending: React.Dispatch<React.SetStateAction<boolean>>
 ): Promise<void> {
-  const deposit = await contract.depositBet({
+  const tx = await contract.depositBet({
     value: ethers.utils.parseEther(betAmount),
   });
   setPending(true);
-  await deposit.wait();
+  await tx.wait();
+  setPending(false);
+}
+export async function withdrawFund(
+  contract: RPSGame,
+  setPending: React.Dispatch<React.SetStateAction<boolean>>
+): Promise<void> {
+  const tx = await contract.withdrawFund();
+  setPending(true);
+  await tx.wait();
   setPending(false);
 }
 
