@@ -135,7 +135,7 @@ export default function RevealMove({
             )}
           >
             <h2 className="text-3xl">
-              {isPlayer ? "Oponent Pick" : "Player2 Pick"}
+              {isPlayer ? "Opponent Pick" : "Player2 Pick"}
             </h2>
             {opponent?.revealed && opponent.move ? (
               getOptionButton(options[opponent.move - 1])
