@@ -54,7 +54,7 @@ export default function DeployedContracts(): ReactElement {
           onClick={handleCreateGame}
           className="block mt-4"
           color="primary"
-          disabled={!walletAddress}
+          disabled={!walletAddress || !(betAmount && opponent)}
         >
           Deploy New Game
         </Button>
@@ -64,20 +64,21 @@ export default function DeployedContracts(): ReactElement {
         <ul className="mt-8">
           <h1 className="my-8 text-xl">Deployed Games</h1>
           {deployedGames.map((game, index) => (
-            <li className="flex justify-between py-2 " key={index}>
+            <li className="flex items-center justify-between py-2 " key={index}>
               <a
                 className="text-blue-600 hover:underline"
                 href={`https://rinkeby.etherscan.io/address/${game.gameAddress}`}
                 target="_blank"
                 rel="noreferrer"
+                title="etherscan link"
               >
                 {game.gameAddress}
               </a>
               <div
                 className={joinClasses(
                   "text-gray-500 ",
-                  "bg-gray-300",
-                  "px-2",
+                  "bg-gray-100",
+                  "px-4",
                   "py-2",
                   "block",
                   "rounded-full"
@@ -93,7 +94,11 @@ export default function DeployedContracts(): ReactElement {
               >
                 {walletAddress === game.player ||
                 walletAddress === game.opponent ? (
-                  <Button color="primary" disabled={!walletAddress}>
+                  <Button
+                    color="primary"
+                    title="Connect to deployed contract"
+                    disabled={!walletAddress}
+                  >
                     Connect
                   </Button>
                 ) : (

@@ -9,7 +9,7 @@
 - can submit move ✅ 
 - Incentivizes the winner ✅ 
 - Should reset the game if moves are same ✅ 
-  - Submit signed move with salt and reveal later.✅ 
+- Submit signed move with salt and reveal later.✅ 
 
 ## Improvements that can be done
   - Should be able to challange a player.

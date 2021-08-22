@@ -124,12 +124,15 @@ export async function fetchGameState(
 
 export async function depositBet(
   contract: RPSGame,
-  betAmount: string
+  betAmount: string,
+  setPending: React.Dispatch<React.SetStateAction<boolean>>
 ): Promise<void> {
   const deposit = await contract.depositBet({
     value: ethers.utils.parseEther(betAmount),
   });
+  setPending(true);
   await deposit.wait();
+  setPending(false);
 }
 
 const getHashedMove = (_move: Move, _salt: string) => {
@@ -143,25 +146,36 @@ const getHashedMove = (_move: Move, _salt: string) => {
 export async function _submitMove(
   contract: RPSGame,
   move: Move,
-  salt: string
+  salt: string,
+  setPending: React.Dispatch<React.SetStateAction<boolean>>
 ): Promise<void> {
   const _bsalt = ethers.utils.id(salt);
   const hashedMove = getHashedMove(move, _bsalt);
   const tx = await contract.submitMove(hashedMove);
+  setPending(true);
   await tx.wait();
+  setPending(false);
 }
 
 export async function _revealMove(
   contract: RPSGame,
   move: Move,
-  salt: string
+  salt: string,
+  setPending: React.Dispatch<React.SetStateAction<boolean>>
 ): Promise<void> {
   const _bsalt = ethers.utils.id(salt);
   const tx = await contract.revealMove(move, _bsalt);
+  setPending(true);
   await tx.wait();
+  setPending(false);
 }
 
-export async function _resetGame(contract: RPSGame) {
+export async function _resetGame(
+  contract: RPSGame,
+  setPending: React.Dispatch<React.SetStateAction<boolean>>
+) {
   const tx = await contract.resetGame();
+  setPending(true);
   await tx.wait();
+  setPending(false);
 }

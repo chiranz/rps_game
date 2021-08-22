@@ -6,14 +6,17 @@ import reportWebVitals from "./reportWebVitals";
 import { WalletProvider } from "./context/WalletContext";
 import { MessageProvider } from "./context/MessageContext";
 import { RPSGameFactoryProvider } from "./context/RPSGameFactoryContext";
+import { TransactionProvider } from "./context/TransactionContext";
 
 ReactDOM.render(
   <React.StrictMode>
     <MessageProvider>
       <WalletProvider>
-        <RPSGameFactoryProvider>
-          <App />
-        </RPSGameFactoryProvider>
+        <TransactionProvider>
+          <RPSGameFactoryProvider>
+            <App />
+          </RPSGameFactoryProvider>
+        </TransactionProvider>
       </WalletProvider>
     </MessageProvider>
   </React.StrictMode>,

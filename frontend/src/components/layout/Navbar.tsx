@@ -1,13 +1,16 @@
 import React, { ReactElement } from "react";
 import { Link } from "react-router-dom";
 import { useMessage } from "../../context/MessageContext";
+import { useTransaction } from "../../context/TransactionContext";
 import { useWallet } from "../../context/WalletContext";
 import { getTruncatedAddress, joinClasses } from "../../helpers";
 import { getSignerAddress } from "../../provider";
 import Button from "../Button";
+import CircularLoader from "../CircularLoader";
 import GlobalMessage from "../GlobalMessage";
 
 export default function Navbar(): ReactElement {
+  const { pending } = useTransaction();
   const { walletAddress, setWalletAddress } = useWallet();
   const { setGlobalMessage } = useMessage();
   const handleConnect = async () => {
@@ -78,11 +81,22 @@ export default function Navbar(): ReactElement {
           </Link>
         </div>
         <ul id="nav-links" className="inline-flex">
+          {pending && (
+            <li>
+              <Button
+                color="warning"
+                className="flex items-center justify-around mr-4"
+              >
+                <CircularLoader />
+                Pending...
+              </Button>
+            </li>
+          )}
           <li>
             {walletAddress ? (
-              <button className="px-2 py-1 border rounded">
+              <Button className="px-2 py-1 border rounded">
                 {getTruncatedAddress(walletAddress)}
-              </button>
+              </Button>
             ) : (
               <Button color="success" onClick={handleConnect}>
                 Connect

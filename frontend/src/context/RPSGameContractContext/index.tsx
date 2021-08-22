@@ -18,6 +18,7 @@ import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
 import { useMessage } from "../MessageContext";
 import { useRPSGameFactory } from "../RPSGameFactoryContext";
+import { useTransaction } from "../TransactionContext";
 interface ContractState extends GameState {
   submitMove?: (move: Move, salt: string) => void;
   revealMove?: (move: Move, salt: string) => void;
@@ -32,6 +33,7 @@ type ProviderProps = {
   children: ReactNode;
 };
 export const ContractProvider = ({ children }: ProviderProps) => {
+  const { setPending } = useTransaction();
   const { selectedGameAddress } = useRPSGameFactory();
   const { walletAddress } = useWallet();
   const { setGlobalMessage } = useMessage();
@@ -59,26 +61,22 @@ export const ContractProvider = ({ children }: ProviderProps) => {
   }, [walletAddress, dispatch, selectedGameAddress]);
   async function handleDeposit() {
     if (contract) {
-      // Set loading
-      await depositBet(contract, state.betAmount || "");
-      // Refetch Player on action and opponent on event
+      await depositBet(contract, state.betAmount || "", setPending);
     }
   }
   async function handleMoveSubmit(move: Move, salt: string) {
     if (contract) {
-      // Set loading
-      await _submitMove(contract, move, salt);
-      // Refetch Player on action and opponent on event
+      await _submitMove(contract, move, salt, setPending);
     }
   }
   async function handleRevealMove(move: Move, salt: string) {
     if (contract) {
-      await _revealMove(contract, move, salt);
+      await _revealMove(contract, move, salt, setPending);
     }
   }
   async function handleResetGame() {
     if (contract) {
-      await _resetGame(contract);
+      await _resetGame(contract, setPending);
     }
   }
   if (contract) {

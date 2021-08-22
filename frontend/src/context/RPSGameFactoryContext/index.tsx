@@ -5,6 +5,7 @@ import { abi as rpsFactoryAbi } from "../../abis/RPSGameFactory.json";
 import { getProvider } from "../../provider";
 import { getRPSGameFactoryAddress } from "../../helpers";
 import { useWallet } from "../WalletContext";
+import { useTransaction } from "../TransactionContext";
 
 const initialState: FactoryState = {
   deployedGames: [],
@@ -34,6 +35,7 @@ type ProviderProps = {
   children: ReactNode;
 };
 export const RPSGameFactoryProvider = ({ children }: ProviderProps) => {
+  const { setPending } = useTransaction();
   const { walletAddress } = useWallet();
   const [selectedGameAddress, setSelectedGameAddress] = React.useState("");
   const [deployedGames, setDeployedGames] = React.useState<Game[]>([]);
@@ -63,7 +65,9 @@ export const RPSGameFactoryProvider = ({ children }: ProviderProps) => {
         ethers.utils.parseEther(betAmount),
         opponent
       );
+      setPending(true);
       await tx.wait();
+      setPending(false);
     }
   }
   if (contract) {
