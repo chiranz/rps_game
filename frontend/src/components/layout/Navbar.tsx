@@ -1,4 +1,5 @@
 import React, { ReactElement } from "react";
+import { Link } from "react-router-dom";
 import { useMessage } from "../../context/MessageContext";
 import { useWallet } from "../../context/WalletContext";
 import { getTruncatedAddress, joinClasses } from "../../helpers";
@@ -72,7 +73,9 @@ export default function Navbar(): ReactElement {
             />
             <path fill="#2298bd" d="M0 212.32l127.96 75.638v-133.8z" />
           </svg>
-          <h2 className="ml-4 text-lg font-medium">RPS Game</h2>
+          <Link to="/">
+            <h2 className="ml-4 text-lg font-medium">RPS Game</h2>
+          </Link>
         </div>
         <ul id="nav-links" className="inline-flex">
           <li>

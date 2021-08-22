@@ -1,10 +1,9 @@
-import { ethers, providers } from "ethers";
+import { ethers } from "ethers";
 import React, { ReactNode } from "react";
 import { getProvider } from "../../provider";
 import { useWallet } from "../WalletContext";
 import { gameReducer } from "./reducer";
 import { initialState } from "./state";
-import { getContractAddress } from "../../helpers";
 import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
 import {
   depositBet,
@@ -18,6 +17,7 @@ import {
 import { RPSGame } from "../../RPSGame";
 import { GameState, Move } from "./contractContext";
 import { useMessage } from "../MessageContext";
+import { useRPSGameFactory } from "../RPSGameFactoryContext";
 interface ContractState extends GameState {
   submitMove?: (move: Move, salt: string) => void;
   revealMove?: (move: Move, salt: string) => void;
@@ -32,26 +32,19 @@ type ProviderProps = {
   children: ReactNode;
 };
 export const ContractProvider = ({ children }: ProviderProps) => {
+  const { selectedGameAddress } = useRPSGameFactory();
   const { walletAddress } = useWallet();
   const { setGlobalMessage } = useMessage();
 
   const [state, dispatch] = React.useReducer(gameReducer, initialState);
   const [contract, setContract] = React.useState<RPSGame>();
-  const [provider, setProvider] = React.useState<providers.JsonRpcProvider>();
 
-  console.log({
-    walletAddress,
-    contract,
-    dispatch,
-    provider,
-  });
   React.useEffect(() => {
     async function init() {
       const _provider = await getProvider();
-      setProvider(_provider);
       const signer = _provider.getSigner();
       const _contract = new ethers.Contract(
-        getContractAddress(),
+        selectedGameAddress,
         rpsGameAbi,
         signer
       ) as unknown as RPSGame;
@@ -63,11 +56,11 @@ export const ContractProvider = ({ children }: ProviderProps) => {
       });
     }
     init();
-  }, [walletAddress, dispatch]);
+  }, [walletAddress, dispatch, selectedGameAddress]);
   async function handleDeposit() {
     if (contract) {
       // Set loading
-      await depositBet(contract);
+      await depositBet(contract, state.betAmount || "");
       // Refetch Player on action and opponent on event
     }
   }
@@ -146,11 +139,7 @@ export const ContractProvider = ({ children }: ProviderProps) => {
       });
     });
   }
-  // TODO: add winner to state
-  // TODO: Update entire state on winner event
-  // TODO: Replay should reset the game if gamestage is completed
   // TODO: How do you handle draw event? What are the things you want to update
-  // TODO: How do you update the ui on revealed? Opps! you won and Opps you lost
 
   return (
     <ContractContext.Provider

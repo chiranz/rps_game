@@ -122,9 +122,12 @@ export async function fetchGameState(
   };
 }
 
-export async function depositBet(contract: RPSGame): Promise<void> {
+export async function depositBet(
+  contract: RPSGame,
+  betAmount: string
+): Promise<void> {
   const deposit = await contract.depositBet({
-    value: ethers.utils.parseEther("0.1"),
+    value: ethers.utils.parseEther(betAmount),
   });
   await deposit.wait();
 }
