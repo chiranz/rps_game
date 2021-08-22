@@ -14,25 +14,25 @@ export default function Navbar(): ReactElement {
     const ethereum = (window as any).ethereum;
     if (ethereum) {
       await ethereum.request({ method: "eth_requestAccounts" });
-      // try {
-      //   await ethereum.request({
-      //     method: "wallet_switchEthereumChain",
-      //     params: [{ chainId: "0x4" }],
-      //   });
-      const address = await getSignerAddress();
-      if (address && setWalletAddress && setGlobalMessage) {
-        setWalletAddress(address);
-        setGlobalMessage({
-          message: "Wallet connected successfully!",
-          type: "success",
+      try {
+        await ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x4" }],
         });
-        setTimeout(() => {
-          setGlobalMessage({});
-        }, 3000);
+        const address = await getSignerAddress();
+        if (address && setWalletAddress && setGlobalMessage) {
+          setWalletAddress(address);
+          setGlobalMessage({
+            message: "Wallet connected successfully!",
+            type: "success",
+          });
+          setTimeout(() => {
+            setGlobalMessage({});
+          }, 3000);
+        }
+      } catch (err: any) {
+        console.log(err.message);
       }
-      // } catch (err: any) {
-      //   console.log(err.message);
-      // }
     }
   };
   return (

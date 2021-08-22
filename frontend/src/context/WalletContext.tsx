@@ -24,7 +24,6 @@ export const WalletProvider = ({ children }: ProviderProps) => {
     init();
   }, []);
   if (provider) {
-    console.log(provider);
     provider.on("accountChanged", (address) => {
       console.log(address);
     });

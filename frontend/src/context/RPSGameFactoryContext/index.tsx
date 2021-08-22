@@ -4,6 +4,7 @@ import { RPSGameFactory } from "../../RPSGameFactory";
 import { abi as rpsFactoryAbi } from "../../abis/RPSGameFactory.json";
 import { getProvider } from "../../provider";
 import { getRPSGameFactoryAddress } from "../../helpers";
+import { useWallet } from "../WalletContext";
 
 const initialState: FactoryState = {
   deployedGames: [],
@@ -33,6 +34,7 @@ type ProviderProps = {
   children: ReactNode;
 };
 export const RPSGameFactoryProvider = ({ children }: ProviderProps) => {
+  const { walletAddress } = useWallet();
   const [selectedGameAddress, setSelectedGameAddress] = React.useState("");
   const [deployedGames, setDeployedGames] = React.useState<Game[]>([]);
   const [contract, setContract] = React.useState<RPSGameFactory>();
@@ -50,8 +52,10 @@ export const RPSGameFactoryProvider = ({ children }: ProviderProps) => {
       const _deployedGames = await _contract.getDeployedGames();
       setDeployedGames(_deployedGames);
     }
-    init();
-  }, []);
+    if (walletAddress) {
+      init();
+    }
+  }, [walletAddress]);
 
   async function deployNewGame(betAmount: string, opponent: string) {
     if (contract) {

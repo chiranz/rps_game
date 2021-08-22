@@ -12,10 +12,27 @@ import Game from "./components/Game";
 import DeployedContracts from "./components/DeployedContracts";
 import { useRPSGameFactory } from "./context/RPSGameFactoryContext";
 import { useWallet } from "./context/WalletContext";
+import { getProvider } from "./provider";
 
 function App() {
-  const { walletAddress } = useWallet();
+  const { walletAddress, setWalletAddress } = useWallet();
   const { selectedGameAddress } = useRPSGameFactory();
+  React.useEffect(() => {
+    async function init() {
+      try {
+        const _provider = await getProvider();
+        const network = await _provider.getNetwork();
+        const { chainId } = network;
+        if (chainId === 4 && setWalletAddress) {
+          const signer = _provider.getSigner();
+          setWalletAddress(await signer.getAddress());
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    init();
+  }, [setWalletAddress]);
   return (
     <Router>
       <div

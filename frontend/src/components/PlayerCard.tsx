@@ -38,7 +38,8 @@ export default function PlayerCard({
         <h3>
           Deposited:{" "}
           <span>
-            {parseFloat(balance || "0") >= parseFloat(betAmount || "0")
+            {parseFloat(balance || "0") >= parseFloat(betAmount || "0") &&
+            balance
               ? "✅"
               : "❌"}{" "}
           </span>{" "}

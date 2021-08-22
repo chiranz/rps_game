@@ -77,7 +77,7 @@ export default function RevealMove({
             {currentPlayer.revealed && !opponent?.revealed && (
               <React.Fragment>
                 <Loader />
-                <div className="">Waiting for opponent to reveal move</div>
+                <div className="">Waiting for the opponent to reveal move</div>
               </React.Fragment>
             )}
             {!currentPlayer.revealed && (
@@ -88,6 +88,7 @@ export default function RevealMove({
                     placeholder="salt"
                     type="text"
                     onChange={(e) => setSalt(e.target.value)}
+                    disabled={!isPlayer}
                   />
                   <InputField
                     value={move}
@@ -95,6 +96,7 @@ export default function RevealMove({
                     placeholder="move"
                     type="number"
                     className="my-2"
+                    disabled={!isPlayer}
                   />
                 </div>
                 <Button

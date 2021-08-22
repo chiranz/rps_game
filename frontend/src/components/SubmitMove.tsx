@@ -98,6 +98,7 @@ export default function SubmitMove({
               placeholder="salt"
               value={salt}
               onChange={(e) => setSalt(e.target.value)}
+              disabled={!isPlayer}
             />
             <Button
               className="block float-right mt-4"
