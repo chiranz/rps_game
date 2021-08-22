@@ -1,4 +1,4 @@
-# Rock Papers Siccors game Implementation
+# Rock Papers Scissors game Implementation
 
 
 ## Version 1

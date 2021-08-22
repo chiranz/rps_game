@@ -65,7 +65,14 @@ export default function DeployedContracts(): ReactElement {
           <h1 className="my-8 text-xl">Deployed Games</h1>
           {deployedGames.map((game, index) => (
             <li className="flex justify-between py-2 " key={index}>
-              {game.gameAddress}
+              <a
+                className="text-blue-600 hover:underline"
+                href={`https://rinkeby.etherscan.io/address/${game.gameAddress}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {game.gameAddress}
+              </a>
               <div
                 className={joinClasses(
                   "text-gray-500 ",
