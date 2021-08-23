@@ -26,7 +26,7 @@ export default function GameStatsCard({
 }: {
   betAmount: string | null;
 }): ReactElement {
-  const { depositBet, isPlayer, gameStage, withdrawFund, currentPlayer } =
+  const { isPlayer, gameStage, withdrawFund, currentPlayer } =
     useRPSGameContract();
 
   console.log({ balance: parseFloat(currentPlayer?.balance || "") });
@@ -56,26 +56,20 @@ export default function GameStatsCard({
           <div>Bet Amt: {betAmount} ETH</div>
         </div>
       </div>
-      <div className="w-full mt-6">
-        <h2 className="text-xl font-bold text-center">
+      <div className="w-full mt-6 text-center">
+        <h2 className="text-xl font-bold ">
           {isPlayer ? "Player" : "Audience"}
         </h2>
-        <div className="flex justify-between w-full">
-          <Button
-            disabled={
-              !isPlayer ||
-              gameStage === 1 ||
-              gameStage === 2 ||
-              parseFloat(currentPlayer?.balance || "") <= 0
-            }
-            onClick={withdrawFund}
-          >
-            Withdraw
-          </Button>
-          <Button disabled={!isPlayer} color="primary" onClick={depositBet}>
-            Deposit bet
-          </Button>
-        </div>
+        <Button
+          disabled={
+            !isPlayer ||
+            gameStage === 1 ||
+            parseFloat(currentPlayer?.balance || "") <= 0
+          }
+          onClick={withdrawFund}
+        >
+          Withdraw
+        </Button>
       </div>
     </div>
   );

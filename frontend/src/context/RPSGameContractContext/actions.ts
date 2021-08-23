@@ -37,20 +37,16 @@ export type StateActions =
   | UpdateGameState;
 
 export enum ActionType {
-  DepositFund,
   SubmitMove,
   RevealMove,
   WithdrawBalance,
 }
 
-export interface DepositBet {
-  type: ActionType.DepositFund;
-  payload: { amount: string; address?: string };
-}
 export interface SubmitMove {
   type: ActionType.SubmitMove;
   payload: { hashedMove: string; address?: string };
 }
+
 export interface RevealMove {
   type: ActionType.RevealMove;
   payload: { move: number; salt?: string; address?: string };
@@ -59,11 +55,7 @@ export interface WithdrawBalance {
   type: ActionType.WithdrawBalance;
 }
 
-export type GameActions =
-  | DepositBet
-  | SubmitMove
-  | RevealMove
-  | WithdrawBalance;
+export type GameActions = SubmitMove | RevealMove | WithdrawBalance;
 
 export interface PlayerFromContract {
   move: number;
@@ -122,18 +114,6 @@ export async function fetchGameState(
   };
 }
 
-export async function depositBet(
-  contract: RPSGame,
-  betAmount: string,
-  setPending: React.Dispatch<React.SetStateAction<boolean>>
-): Promise<void> {
-  const tx = await contract.depositBet({
-    value: ethers.utils.parseEther(betAmount),
-  });
-  setPending(true);
-  await tx.wait();
-  setPending(false);
-}
 export async function withdrawFund(
   contract: RPSGame,
   setPending: React.Dispatch<React.SetStateAction<boolean>>
@@ -154,13 +134,16 @@ const getHashedMove = (_move: Move, _salt: string) => {
 
 export async function _submitMove(
   contract: RPSGame,
+  betAmount: string,
   move: Move,
   salt: string,
   setPending: React.Dispatch<React.SetStateAction<boolean>>
 ): Promise<void> {
   const _bsalt = ethers.utils.id(salt);
   const hashedMove = getHashedMove(move, _bsalt);
-  const tx = await contract.submitMove(hashedMove);
+  const tx = await contract.submitMove(hashedMove, {
+    value: ethers.utils.parseEther(betAmount),
+  });
   setPending(true);
   await tx.wait();
   setPending(false);

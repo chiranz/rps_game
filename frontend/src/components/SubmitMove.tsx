@@ -70,7 +70,7 @@ export default function SubmitMove({
   };
   return (
     <div>
-      {gameStage === 1 && !currentPlayer?.submitted && !userChoice && (
+      {gameStage === 0 && !currentPlayer?.submitted && !userChoice && (
         <main className="flex flex-wrap justify-center mx-auto align-center w-96">
           <h1 className="text-4xl font-medium text-green-600">
             Select Your Choice
@@ -78,7 +78,7 @@ export default function SubmitMove({
           {options.map((option) => getOptionButton(option, handleOptionChoose))}
         </main>
       )}
-      {userChoice && gameStage === 1 && !currentPlayer?.submitted && (
+      {userChoice && gameStage === 0 && !currentPlayer?.submitted && (
         <div className="flex items-center justify-around w-full">
           <div>
             <h1>

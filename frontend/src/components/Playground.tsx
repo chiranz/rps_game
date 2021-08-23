@@ -43,28 +43,17 @@ export const getOptionButton = (
 };
 
 export default function Playground(): ReactElement {
-  const { gameStage, currentPlayer, betAmount, opponent } =
-    useRPSGameContract();
+  const { gameStage, currentPlayer, opponent } = useRPSGameContract();
   const [salt, setSalt] = useState("");
   const [move, setMove] = useState(0);
   console.log(gameStage);
 
   return (
     <div className="py-4 mt-8 border rounded">
-      {gameStage === 0 &&
-        (parseFloat(currentPlayer?.balance || "0") <
-        parseFloat(betAmount || "0") ? (
-          <GameActionInfoCard message="Please deposit the bet first" />
-        ) : parseFloat(opponent?.balance || "0") <
-          parseFloat(betAmount || "0") ? (
-          <GameActionInfoCard
-            message="Waiting for the opponent to depoist the bet"
-            loader={true}
-          />
-        ) : (
-          ""
-        ))}
-      {gameStage === 1 && currentPlayer?.submitted && !opponent?.submitted ? (
+      {!currentPlayer?.submitted && gameStage === 0 && (
+        <SubmitMove salt={salt} setSalt={setSalt} setMove={setMove} />
+      )}
+      {gameStage === 0 && currentPlayer?.submitted && !opponent?.submitted ? (
         <GameActionInfoCard
           message="Waiting for the opponent to submit their move"
           loader={true}
@@ -76,9 +65,6 @@ export default function Playground(): ReactElement {
           setMove={setMove}
           setSalt={setSalt}
         />
-      )}
-      {!currentPlayer?.submitted && gameStage === 1 && (
-        <SubmitMove salt={salt} setSalt={setSalt} setMove={setMove} />
       )}
     </div>
   );

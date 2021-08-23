@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 contract RPSGame {
     enum GameStage {
         Open,
-        BetsDeposited,
         MovesSubmitted,
         MoveRevealed,
         Completed
@@ -67,34 +66,20 @@ contract RPSGame {
         }
     }
 
-    function depositBet() external payable isPlayer {
+    function submitMove(bytes32 _hashedMove) external payable isPlayer {
         require(
-            msg.value >= betAmount,
-            "RPSGame: Balance not enough, Send more fund"
-        );
-
-        msg.sender == playerA.addr
-            ? playerA.balance += msg.value
-            : playerB.balance += msg.value;
-        emit Deposit(msg.sender);
-
-        if (playerA.balance >= betAmount && playerB.balance >= betAmount) {
-            gameStage = GameStage.BetsDeposited;
-            emit GameStageChanged(GameStage.BetsDeposited);
-        }
-    }
-
-    function submitMove(bytes32 _hashedMove) external isPlayer {
-        require(
-            gameStage == GameStage.BetsDeposited,
-            "RPSGame: game not under progress"
+            gameStage == GameStage.Open,
+            "RPSGame: Game is not open at the movement"
         );
         Player storage player = playerA.addr == msg.sender ? playerA : playerB;
-
         require(
             !player.submitted,
             "RPSGame: you have already submitted the move"
         );
+
+        player.balance += msg.value;
+        require(player.balance >= betAmount, "RPSGame: Add more fund");
+
         player.hashedMove = _hashedMove;
         player.submitted = true;
         emit SubmitMove(player.addr);
@@ -138,9 +123,9 @@ contract RPSGame {
         if (_winner != address(0)) {
             winner = _winner;
             emit Winner(_winner);
-            gameStage = GameStage.Completed;
             incentivize(_winner);
         }
+        gameStage = GameStage.Completed;
     }
 
     function incentivize(address _winner) internal {
@@ -156,8 +141,7 @@ contract RPSGame {
 
     modifier notUnderProgress() {
         require(
-            gameStage != GameStage.MovesSubmitted &&
-                gameStage != GameStage.BetsDeposited,
+            gameStage != GameStage.MovesSubmitted,
             "RPSGame: Game under progress"
         );
         _;
@@ -200,11 +184,7 @@ contract RPSGame {
         playerB.move = Move.None;
         playerB.submitted = false;
         playerB.revealed = false;
-        if (playerA.balance >= betAmount && playerB.balance >= betAmount) {
-            gameStage = GameStage.BetsDeposited;
-        } else {
-            gameStage = GameStage.Open;
-        }
+        gameStage = GameStage.Open;
         emit ResetGame();
     }
 }

@@ -12,11 +12,10 @@
 - Submit signed move with salt and reveal later.✅ 
 
 ## Improvements that can be done
-  - Should be able to challange a player.
-  - Add time limit to submit move.(Say 5 mins) and to reveal move another 5 minutes. 
-  - Reset game after five minutes if one of the player doesn't submit the move.
-  - Punish non cooperative players by giving fund to other player.
+  - Players should be able to bet with any ERC20 currencies.
+  - Winner can mint a NFT.
+  - Add time limit to reveal move and punish the non cooperative player by incentivizing cooperative player.
 
 
 ## Contract Address
-[Ether scan - Rinkeby](https://rinkeby.etherscan.io/address/0xb0f9Dfb7c06E2e9b9BaC5Ac397D686C64be87e7B)
+[Ether scan - Rinkeby](https://rinkeby.etherscan.io/address/0x1014318fF8ccB7AE34293a9ff1Ca39c617820c1e)

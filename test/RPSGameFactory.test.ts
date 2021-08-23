@@ -32,4 +32,13 @@ describe("RPSGameFactory", async function () {
     const deployedContracts = await rpsGameFactoryContract.getDeployedGames();
     assert.equal(deployedContracts.length, 1);
   });
+  it("should emit RPSGameCreated event", async () => {
+    await rpsGameFactoryContract.createGame(
+      ethers.utils.parseEther(BET_AMOUNT),
+      signerB.address
+    );
+    rpsGameFactoryContract.on("RPSGameCreated", () => {
+      console.log("Event emitted");
+    });
+  });
 });

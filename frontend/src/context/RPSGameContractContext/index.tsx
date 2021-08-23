@@ -6,7 +6,6 @@ import { gameReducer } from "./reducer";
 import { initialState } from "./state";
 import { abi as rpsGameAbi } from "../../abis/RPSGame.json";
 import {
-  depositBet,
   fetchGameState,
   getFormattedPlayer,
   _revealMove,
@@ -23,7 +22,6 @@ import { useTransaction } from "../TransactionContext";
 interface ContractState extends GameState {
   submitMove?: (move: Move, salt: string) => void;
   revealMove?: (move: Move, salt: string) => void;
-  depositBet?: () => void;
   withdrawFund?: () => void;
   resetGame?: () => void;
 }
@@ -60,19 +58,19 @@ export const ContractProvider = ({ children }: ProviderProps) => {
     }
     init();
   }, [walletAddress, dispatch, selectedGameAddress]);
-  async function handleDeposit() {
-    if (contract) {
-      await depositBet(contract, state.betAmount || "", setPending);
-    }
-  }
+
   async function handleWithdraw() {
     if (contract) {
       await withdrawFund(contract, setPending);
     }
   }
   async function handleMoveSubmit(move: Move, salt: string) {
+    const playerBalance = parseFloat(state.currentPlayer?.balance || "0");
+    const _betAmount = parseFloat(state.betAmount || "0");
+    const depositAmount =
+      playerBalance >= _betAmount ? "0" : _betAmount.toString();
     if (contract) {
-      await _submitMove(contract, move, salt, setPending);
+      await _submitMove(contract, depositAmount, move, salt, setPending);
     }
   }
 
@@ -127,9 +125,6 @@ export const ContractProvider = ({ children }: ProviderProps) => {
         });
       }
     };
-    contract.on("Deposit", async (address) => {
-      fetchPlayer(address);
-    });
     contract.on("SubmitMove", async (address) => {
       fetchPlayer(address);
     });
@@ -154,7 +149,6 @@ export const ContractProvider = ({ children }: ProviderProps) => {
     <ContractContext.Provider
       value={{
         ...state,
-        depositBet: handleDeposit,
         submitMove: handleMoveSubmit,
         revealMove: handleRevealMove,
         resetGame: handleResetGame,

@@ -7,7 +7,6 @@ import { RPSGame, RPSGame__factory } from "../typechain/index";
 
 enum GameStage {
   Open,
-  BetsDeposited,
   MovesSubmitted,
   MoveRevealed,
   Completed,
@@ -68,41 +67,21 @@ describe("RPS Game", function () {
     assert.equal(player.balance.toNumber(), 0);
   });
 
-  it("Should allow deployer to deposit bet", async function () {
-    await rpsGameContract.depositBet({
-      value: ethers.utils.parseEther(BET_AMOUNT),
-    });
-    const player = await rpsGameContract.playerA();
-    assert.equal(ethers.utils.formatEther(player.balance), BET_AMOUNT);
-
-    // When player A deposits bet Gamestate should update to open
-    const gameStage = await rpsGameContract.gameStage();
-    assert.equal(gameStage, GameStage.Open);
-  });
-  it("should allow player B to deposit fund", async function () {
-    await rpsGameContract.connect(signerB).depositBet({
-      value: ethers.utils.parseEther(BET_AMOUNT),
-    });
-    const player = await rpsGameContract.playerB();
-    assert.equal(ethers.utils.formatEther(player.balance), BET_AMOUNT);
-    assert.equal(player.addr, signerB.address);
-
-    // When player B deposits bet Gamestate should update to Progress
-  });
-  it("should update game state to bet deposited once both players deposit bet", async function () {
-    const gameStage = await rpsGameContract.gameStage();
-    assert.equal(gameStage, GameStage.BetsDeposited);
-  });
   it("should check if player A and player B are different accounts", async function () {
     const playerA = await rpsGameContract.playerA();
     const playerB = await rpsGameContract.playerB();
     assert.notEqual(playerA.addr, playerB.addr);
   });
-  it("should not allow anyone beside players to deposit bet", async function () {
+  it("should restrict non players to submit move", async function () {
     try {
-      await rpsGameContract.connect(signers[1]).depositBet({
-        value: ethers.utils.parseEther(BET_AMOUNT),
-      });
+      const _hashedMove = getHashedMove(Move.Rock, saltB);
+      await rpsGameContract.connect(signers[1]).submitMove(
+        _hashedMove,
+
+        {
+          value: ethers.utils.parseEther(BET_AMOUNT),
+        }
+      );
       assert(true);
     } catch (err) {
       assert.ok(err);
@@ -112,9 +91,12 @@ describe("RPS Game", function () {
   it("should allow player A to submit move", async function () {
     // Player a submits move
     const _hashedMove = getHashedMove(Move.Paper, saltA);
-    await rpsGameContract.submitMove(_hashedMove);
+    await rpsGameContract.submitMove(_hashedMove, {
+      value: ethers.utils.parseEther(BET_AMOUNT),
+    });
     const playerA = await rpsGameContract.playerA();
 
+    assert.equal(ethers.utils.formatEther(playerA.balance), BET_AMOUNT);
     assert.isTrue(playerA.submitted);
     assert.equal(playerA.hashedMove, _hashedMove);
   });
@@ -122,9 +104,16 @@ describe("RPS Game", function () {
   it("should allow player B to submit move", async function () {
     // Player b submits move
     const _hashedMove = getHashedMove(Move.Rock, saltB);
-    await rpsGameContract.connect(signerB).submitMove(_hashedMove);
+    await rpsGameContract.connect(signerB).submitMove(
+      _hashedMove,
+
+      {
+        value: ethers.utils.parseEther(BET_AMOUNT),
+      }
+    );
     const playerB = await rpsGameContract.playerB();
 
+    assert.equal(ethers.utils.formatEther(playerB.balance), BET_AMOUNT);
     assert.isTrue(playerB.submitted);
     assert.equal(playerB.hashedMove, _hashedMove);
   });
