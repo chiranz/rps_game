@@ -1,6 +1,5 @@
 import React, { ReactElement } from "react";
 import { useRPSGameContract } from "../context/RPSGameContractContext";
-import { useWallet } from "../context/WalletContext";
 import { joinClasses } from "../helpers";
 import Button from "./Button";
 import HiddenMove from "./HiddenMove";
@@ -21,11 +20,13 @@ export default function RevealMove({
   setSalt,
   setMove,
 }: RevealMoveProps): ReactElement {
-  const { walletAddress } = useWallet();
   const { revealMove, currentPlayer, opponent, isPlayer, winner, resetGame } =
     useRPSGameContract();
   const handleMoveReveal = () => {
-    console.log("I am trying");
+    if (move === 0) {
+      alert("Move must be selected!!");
+      return;
+    }
     if (revealMove && move) {
       revealMove(move, salt);
     }
@@ -33,6 +34,24 @@ export default function RevealMove({
   const handleResetGame = () => {
     if (resetGame) {
       resetGame();
+    }
+  };
+  const getGameResultText = (): string => {
+    if (winner === "0x0000000000000000000000000000000000000000") {
+      return "Game Draw";
+    }
+    if (currentPlayer?.addr === winner) {
+      if (isPlayer) {
+        return "You Won!!";
+      } else {
+        return "Player1 Won!!";
+      }
+    } else {
+      if (isPlayer) {
+        return "You Lost!!";
+      } else {
+        return "Player2 Won!!";
+      }
     }
   };
   return (
@@ -90,19 +109,30 @@ export default function RevealMove({
                     onChange={(e) => setSalt(e.target.value)}
                     disabled={!isPlayer}
                   />
-                  <InputField
+                  <select
+                    className={joinClasses(
+                      "w-full",
+                      "block",
+                      "p-2",
+                      "border",
+                      "rounded",
+                      "bg-white",
+                      "mt-4"
+                    )}
                     value={move}
                     onChange={(e) => setMove(+e.target.value)}
-                    placeholder="move"
-                    type="number"
-                    className="my-2"
                     disabled={!isPlayer}
-                  />
+                  >
+                    <option value={0}>None</option>
+                    <option value={1}>Rock</option>
+                    <option value={2}>Paper</option>
+                    <option value={3}>Scissors</option>
+                  </select>
                 </div>
                 <Button
                   disabled={!isPlayer}
                   color="primary"
-                  className="block text-center"
+                  className="block mt-4 text-center"
                   onClick={handleMoveReveal}
                 >
                   Reveal Move
@@ -111,9 +141,7 @@ export default function RevealMove({
             )}
             {currentPlayer.revealed && opponent?.revealed && (
               <React.Fragment>
-                <h1 className="text-2xl">
-                  {winner === walletAddress ? "You won!!" : "You lost!"}
-                </h1>
+                <h1 className="text-2xl">{getGameResultText()}</h1>
                 <Button
                   disabled={!isPlayer}
                   color="primary"
