@@ -6,7 +6,7 @@ export const networkNameFromId = {
   1: "Mainnet",
   3: "Ropsten",
   4: "Rinkeby",
-  5: "Gorli",
+  5: "Goerli",
   42: "Kovan",
 };
 
@@ -15,8 +15,10 @@ export const getTruncatedAddress = (address: string = "") => {
 };
 
 export const getRPSGameFactoryAddress = () => {
+  // goerli address
+  return "0x895c6eBcf228F08436d80EdB6d6981dF0D3E3Ce3";
   // Rinkeby Address
-  return "0xb0f9Dfb7c06E2e9b9BaC5Ac397D686C64be87e7B";
+  // return "0xb0f9Dfb7c06E2e9b9BaC5Ac397D686C64be87e7B";
   // Old
   // return "0xD108ae5384de2e2DC0f3855e75cB882E39929c82";
   // Localhost

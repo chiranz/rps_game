@@ -67,7 +67,7 @@ export default function DeployedContracts(): ReactElement {
             <li className="flex items-center justify-between py-2 " key={index}>
               <a
                 className="text-blue-600 hover:underline"
-                href={`https://rinkeby.etherscan.io/address/${game.gameAddress}`}
+                href={`https://goerli.etherscan.io/address/${game.gameAddress}`}
                 target="_blank"
                 rel="noreferrer"
                 title="etherscan link"

@@ -20,7 +20,7 @@ export default function Navbar(): ReactElement {
       try {
         await ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x4" }],
+          params: [{ chainId: "0x5" }],
         });
         const address = await getSignerAddress();
         if (address && setWalletAddress && setGlobalMessage) {

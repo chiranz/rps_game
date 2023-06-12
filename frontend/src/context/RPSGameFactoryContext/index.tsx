@@ -45,11 +45,11 @@ export const RPSGameFactoryProvider = ({ children }: ProviderProps) => {
     async function init() {
       const _provider = await getProvider();
       const signer = _provider.getSigner();
-      const _contract = new ethers.Contract(
+      const _contract = (new ethers.Contract(
         getRPSGameFactoryAddress(),
         rpsFactoryAbi,
         signer
-      ) as unknown as RPSGameFactory;
+      ) as unknown) as RPSGameFactory;
       setContract(_contract);
       const _deployedGames = await _contract.getDeployedGames();
       setDeployedGames(_deployedGames);
